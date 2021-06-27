@@ -1,27 +1,19 @@
-import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core'
+import { CssBaseline, ThemeProvider } from '@material-ui/core'
 import React from 'react'
 import { ProjectDashboard } from './project-dashboard'
 import theme from './theme'
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingBottom: '5rem'
-  },
-  container: {
-    width: '80vw'
-  }
-}))
-
 const App: React.FunctionComponent = () => {
-  const classes = useStyles()
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className={classes.paper}>
+      <div>
+        {/* <ProjectDashboard organisation="pretamanger" project="web" />
+        <ProjectDashboard organisation="pretamanger" project="auth-api" />
+        <ProjectDashboard
+          organisation="pretamanger"
+          project="customer-account-profiles"
+        /> */}
         <ProjectDashboard
           organisation="andreacaldera"
           project="eastendcc-www"

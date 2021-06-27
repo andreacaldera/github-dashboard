@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev src/server/server"
+    "dev": "ts-node-dev src/server/server",
+    "start": "ts-node src/server/server"
   },
   "eslintConfig": {
     "extends": [

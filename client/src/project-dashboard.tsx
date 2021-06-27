@@ -15,7 +15,7 @@ import TableRow from '@material-ui/core/TableRow'
 import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 
-const DATA_FETCH_INTERVAL = 10 * 1000
+const DATA_FETCH_INTERVAL = 30 * 1000
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -131,7 +131,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                         <TableCell align="left">{row.conclusion}</TableCell>
                         <TableCell align="left">
                           <a href={row.html_url} target={row.html_url}>
-                            {row.html_url}
+                            View action
                           </a>
                         </TableCell>
                         <TableCell align="left">{row.started_at}</TableCell>

@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev:server": "ts-node-dev src/server/server",
-    "start": "react-scripts start",
+    "start": "PORT=4000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:all": "react-scripts test --watchAll=false",
@@ -65,5 +64,5 @@
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1"
   },
-  "proxy": "http://localhost:8080"
+  "proxy": "http://localhost:4001"
 }
