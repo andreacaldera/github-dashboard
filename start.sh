@@ -1,6 +1,6 @@
 cd server
-npm start
+npm start & 
 cd -
 cd client
 npm run build
-npm start
+npm start &
