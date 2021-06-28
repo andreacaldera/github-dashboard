@@ -1,4 +1,4 @@
-import { CssBaseline, ThemeProvider } from '@material-ui/core'
+import { CssBaseline, ThemeProvider, Typography } from '@material-ui/core'
 import React from 'react'
 import { ProjectDashboard } from './project-dashboard'
 import theme from './theme'
@@ -8,12 +8,19 @@ const App: React.FunctionComponent = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div>
-        {/* <ProjectDashboard organisation="pretamanger" project="web" />
+        <Typography variant="h3" component="h3">
+          Github Dashboard
+        </Typography>
+        <ProjectDashboard
+          organisation="pretamanger"
+          project="web"
+          action="Build+and+deploy"
+        />
         <ProjectDashboard organisation="pretamanger" project="auth-api" />
         <ProjectDashboard
           organisation="pretamanger"
           project="customer-account-profiles"
-        /> */}
+        />
         <ProjectDashboard
           organisation="andreacaldera"
           project="eastendcc-www"
