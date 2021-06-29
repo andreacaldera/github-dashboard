@@ -35,10 +35,14 @@ const useStyles = makeStyles(theme => ({
     background: theme.palette.error.main
   },
   successFont: {
-    color: theme.palette.success.main
+    '& a': {
+      color: `${theme.palette.success.main} !important`
+    }
   },
   failureFont: {
-    color: theme.palette.error.main
+    '& a': {
+      color: `${theme.palette.error.main} !important`
+    }
   },
   running: {
     background: theme.palette.warning.light
@@ -94,8 +98,8 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
   project,
   action
 }) => {
-  const { getLastCommit, getLastSuccessfulCommit } = useCommitData()
-  const [projectStatus, setProjectStatus] = useState<CommitData | undefined>()
+  const [commitData, setCommitData] = useState<CommitData | undefined>()
+  const { getLastCommit, getLastSuccessfulCommit } = useCommitData(commitData)
   const [expanded, setExpanded] = React.useState(false)
   const classes = useStyles()
 
@@ -106,7 +110,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
       }`
     )
     const body = await data.json()
-    setProjectStatus(body)
+    setCommitData(body)
   }
 
   useEffect(() => {
@@ -117,15 +121,15 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
     }
   }, [])
 
-  const lastUpdated = useDate(projectStatus?.created, `Last update: `)
+  const lastUpdated = useDate(commitData?.created, `Last update: `)
 
-  const firstCommit = getLastCommit(projectStatus)
+  const firstCommit = getLastCommit()
   const completedProject =
     firstCommit?.conclusion === 'success'
       ? classes.successFont
       : classes.failureFont
 
-  const lastSuccessfulCommit = getLastSuccessfulCommit(projectStatus)
+  const lastSuccessfulCommit = getLastSuccessfulCommit()
 
   return (
     <div className={classes.container}>
@@ -145,7 +149,12 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
           }
           title={
             <div className={firstCommit?.conclusion && completedProject}>
-              {organisation} / {project}
+              <a
+                href={`https://github.com/${organisation}/${project}/commits`}
+                target={`https://github.com/${organisation}/${project}/commits`}
+              >
+                {organisation} / {project}
+              </a>
             </div>
           }
           subheader={
@@ -173,7 +182,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {projectStatus?.commits.map(commit => {
+                    {commitData?.commits.map(commit => {
                       const { conclusion, status } = commit
                       const completedClass =
                         conclusion === 'success'
