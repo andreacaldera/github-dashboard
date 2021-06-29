@@ -7,6 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
+  "lint-staged": {
+    "**/*.{js,ts,json,json5,md}": [
+      "npm run format"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/andreacaldera/github-dashboard.git"

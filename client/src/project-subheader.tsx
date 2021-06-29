@@ -1,6 +1,7 @@
 import { Link } from '@material-ui/core'
 import React from 'react'
 import { Commit } from './project-dashboard'
+import { useDate } from './use-date'
 
 type Props = {
   lastUpdated: string
@@ -13,18 +14,16 @@ export const ProjectSubheader: React.FC<Props> = ({
 }) => {
   return (
     <>
-      <p>{lastUpdated}</p>
-      <p>
-        Last deployment to production:{' '}
-        <Link
-          color="textPrimary"
-          href={lastSuccessfulCommit?.commit.html_url}
-          target={`commit-url-${lastSuccessfulCommit?.head_sha}`}
-        >
-          {lastSuccessfulCommit?.head_sha} by{' '}
-          {lastSuccessfulCommit?.commit.commit.author.name} at
-        </Link>
-      </p>
+      {lastUpdated}; last deployment to production:{' '}
+      <Link
+        color="textPrimary"
+        href={lastSuccessfulCommit?.commit.html_url}
+        target={`commit-url-${lastSuccessfulCommit?.head_sha}`}
+      >
+        {lastSuccessfulCommit?.head_sha} by{' '}
+        {lastSuccessfulCommit?.commit.commit.author.name} at{' '}
+        {useDate(lastSuccessfulCommit?.completed_at)}
+      </Link>
     </>
   )
 }

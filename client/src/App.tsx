@@ -21,14 +21,23 @@ const App: React.FunctionComponent = () => {
           organisation="pretamanger"
           project="customer-account-profiles"
         />
+        <ProjectDashboard organisation="pretamanger" project="platform-api" />
         <ProjectDashboard
+          organisation="pretamanger"
+          project="coffee-subscription"
+        />
+        <ProjectDashboard
+          organisation="pretamanger"
+          project="coffee-subscription-manage"
+        />
+        {/* <ProjectDashboard
           organisation="andreacaldera"
           project="eastendcc-www"
         />
         <ProjectDashboard
           organisation="andreacaldera"
           project="eastendcc-api"
-        />
+        /> */}
       </div>
     </ThemeProvider>
   )
