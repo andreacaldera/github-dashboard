@@ -19,7 +19,7 @@ import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
 import { useDate } from './useDate'
 
-const DATA_FETCH_INTERVAL = 30 * 1000
+const DATA_FETCH_INTERVAL = 60 * 1000
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -77,6 +77,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
   const classes = useStyles()
 
   const fetchFromApi = async () => {
+    console.log('fetch data')
     const data = await fetch(
       `/api/action-status?organisation=${organisation}&project=${project}${
         action ? `&action=${action}` : ''
@@ -88,8 +89,9 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
 
   useEffect(() => {
     void fetchFromApi()
-    const dataFetch = setTimeout(fetchFromApi, DATA_FETCH_INTERVAL)
+    const dataFetch = setInterval(fetchFromApi, DATA_FETCH_INTERVAL)
     return () => {
+      console.log('fetch data 3')
       clearTimeout(dataFetch)
     }
   }, [])
@@ -153,7 +155,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                         status !== 'completed' ? classes.running : ''
                       return (
                         <TableRow
-                          key={row.commitSha}
+                          key={row.commitSha || Date.now()}
                           className={runningClass || completedClass}
                         >
                           <TableCell align="left">
