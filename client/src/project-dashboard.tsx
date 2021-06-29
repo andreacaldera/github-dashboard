@@ -17,7 +17,9 @@ import TableRow from '@material-ui/core/TableRow'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
-import { useDate } from './useDate'
+import { ProjectSubheader } from './project-subheader'
+import { useCommitData } from './use-commit-data'
+import { useDate } from './use-date'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -67,17 +69,37 @@ interface Props {
   action?: string
 }
 
+export type Commit = {
+  conclusion: string
+  status: string
+  commitSha: string
+  head_sha: string
+  started_at?: string
+  completed_at?: string
+  html_url?: string
+  commit: {
+    author: string
+    html_url?: string
+    commit: { author: { name: string } }
+  }
+}
+
+export type CommitData = {
+  commits: ReadonlyArray<Commit>
+  created: string
+}
+
 export const ProjectDashboard: React.FunctionComponent<Props> = ({
   organisation,
   project,
   action
 }) => {
-  const [projectStatus, setProjectStatus] = useState<any>() // todo type
+  const { getLastCommit, getLastSuccessfulCommit } = useCommitData()
+  const [projectStatus, setProjectStatus] = useState<CommitData | undefined>()
   const [expanded, setExpanded] = React.useState(false)
   const classes = useStyles()
 
   const fetchFromApi = async () => {
-    console.log('fetch data')
     const data = await fetch(
       `/api/action-status?organisation=${organisation}&project=${project}${
         action ? `&action=${action}` : ''
@@ -91,18 +113,19 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
     void fetchFromApi()
     const dataFetch = setInterval(fetchFromApi, DATA_FETCH_INTERVAL)
     return () => {
-      console.log('fetch data 3')
       clearTimeout(dataFetch)
     }
   }, [])
 
-  const subheader = useDate(projectStatus?.created, `Last update: `)
+  const lastUpdated = useDate(projectStatus?.created, `Last update: `)
 
-  const firstCommit = projectStatus ? projectStatus.commits[0] : null
+  const firstCommit = getLastCommit(projectStatus)
   const completedProject =
     firstCommit?.conclusion === 'success'
       ? classes.successFont
       : classes.failureFont
+
+  const lastSuccessfulCommit = getLastSuccessfulCommit(projectStatus)
 
   return (
     <div className={classes.container}>
@@ -122,10 +145,15 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
           }
           title={
             <div className={firstCommit?.conclusion && completedProject}>
-              {organisation} / {project} {status ? `: ${status}` : ''}
+              {organisation} / {project}
             </div>
           }
-          subheader={subheader}
+          subheader={
+            <ProjectSubheader
+              lastUpdated={lastUpdated}
+              lastSuccessfulCommit={lastSuccessfulCommit}
+            />
+          }
         />
 
         <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -145,8 +173,8 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {projectStatus?.commits.map((row: any) => {
-                      const { conclusion, status } = row
+                    {projectStatus?.commits.map(commit => {
+                      const { conclusion, status } = commit
                       const completedClass =
                         conclusion === 'success'
                           ? classes.success
@@ -155,32 +183,32 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                         status !== 'completed' ? classes.running : ''
                       return (
                         <TableRow
-                          key={row.commitSha || Date.now()}
+                          key={commit.commitSha || Date.now()}
                           className={runningClass || completedClass}
                         >
                           <TableCell align="left">
                             <a
-                              href={row.commit.html_url}
-                              target={`commit-url-${row.head_sha}`}
+                              href={commit.commit.html_url}
+                              target={`commit-url-${commit.head_sha}`}
                             >
-                              {row.head_sha}
+                              {commit.head_sha}
                             </a>
                           </TableCell>
                           <TableCell align="left">
-                            {row.commit.commit.author.name}
+                            {commit.commit.commit.author.name}
                           </TableCell>
-                          <TableCell align="left">{row.status}</TableCell>
-                          <TableCell align="left">{row.conclusion}</TableCell>
+                          <TableCell align="left">{commit.status}</TableCell>
+                          <TableCell align="left">{conclusion}</TableCell>
                           <TableCell align="left">
-                            <a href={row.html_url} target={row.html_url}>
+                            <a href={commit.html_url} target={commit.html_url}>
                               View action
                             </a>
                           </TableCell>
                           <TableCell align="left">
-                            {useDate(row.started_at)}
+                            {useDate(commit.started_at)}
                           </TableCell>
                           <TableCell align="left">
-                            {useDate(row.completed_at)}
+                            {useDate(commit.completed_at)}
                           </TableCell>
                         </TableRow>
                       )

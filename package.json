@@ -1,0 +1,26 @@
+{
+  "name": "github-dashboard",
+  "version": "1.0.0",
+  "description": "`cd client`",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreacaldera/github-dashboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andreacaldera/github-dashboard/issues"
+  },
+  "homepage": "https://github.com/andreacaldera/github-dashboard#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.2"
+  }
+}
