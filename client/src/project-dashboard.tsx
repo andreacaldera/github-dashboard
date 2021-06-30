@@ -19,7 +19,7 @@ import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
 import { ProjectSubheader } from './project-subheader'
 import { useCommitData } from './use-commit-data'
-import { useDate } from './use-date'
+import { useDate, useRelativeDate } from './use-date'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -73,6 +73,11 @@ interface Props {
   action?: string
 }
 
+type Author = {
+  name: string
+  html_url: string
+}
+
 export type Commit = {
   conclusion: string
   status: string
@@ -82,9 +87,9 @@ export type Commit = {
   completed_at?: string
   html_url?: string
   commit: {
-    author: string
+    author: Author
     html_url?: string
-    commit: { author: { name: string } }
+    commit: { author: Author; message: string }
   }
 }
 
@@ -99,7 +104,11 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
   action
 }) => {
   const [commitData, setCommitData] = useState<CommitData | undefined>()
-  const { getLastCommit, getLastSuccessfulCommit } = useCommitData(commitData)
+  const {
+    getLastCommit,
+    getLastSuccessfulCommit,
+    getAverageCommitTime
+  } = useCommitData(commitData)
   const [expanded, setExpanded] = React.useState(false)
   const classes = useStyles()
 
@@ -120,8 +129,6 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
       clearTimeout(dataFetch)
     }
   }, [])
-
-  const lastUpdated = useDate(commitData?.created, `Last update: `)
 
   const firstCommit = getLastCommit()
   const completedProject =
@@ -158,74 +165,77 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
             </div>
           }
           subheader={
-            <ProjectSubheader
-              lastUpdated={lastUpdated}
-              lastSuccessfulCommit={lastSuccessfulCommit}
-            />
+            <ProjectSubheader lastSuccessfulCommit={lastSuccessfulCommit} />
           }
         />
 
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography color="textSecondary" component="p">
-              <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="left">Commit SHA</TableCell>
-                      <TableCell align="left">Author</TableCell>
-                      <TableCell align="left">Status</TableCell>
-                      <TableCell align="left">Conclusion</TableCell>
-                      <TableCell align="left">Action</TableCell>
-                      <TableCell align="left">Started at</TableCell>
-                      <TableCell align="left">Completed at</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {commitData?.commits.map(commit => {
-                      const { conclusion, status } = commit
-                      const completedClass =
-                        conclusion === 'success'
-                          ? classes.success
-                          : classes.failure
-                      const runningClass =
-                        status !== 'completed' ? classes.running : ''
-                      return (
-                        <TableRow
-                          key={commit.commitSha || Date.now()}
-                          className={runningClass || completedClass}
-                        >
-                          <TableCell align="left">
-                            <a
-                              href={commit.commit.html_url}
-                              target={`commit-url-${commit.head_sha}`}
-                            >
-                              {commit.head_sha}
-                            </a>
-                          </TableCell>
-                          <TableCell align="left">
-                            {commit.commit.commit.author.name}
-                          </TableCell>
-                          <TableCell align="left">{commit.status}</TableCell>
-                          <TableCell align="left">{conclusion}</TableCell>
-                          <TableCell align="left">
-                            <a href={commit.html_url} target={commit.html_url}>
-                              View action
-                            </a>
-                          </TableCell>
-                          <TableCell align="left">
-                            {useDate(commit.started_at)}
-                          </TableCell>
-                          <TableCell align="left">
-                            {useDate(commit.completed_at)}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              Last update: {useRelativeDate(commitData?.created)} ago
             </Typography>
+            <Typography color="textSecondary" component="p">
+              Average execution time: {getAverageCommitTime()} minutes
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="left">Commit</TableCell>
+                    <TableCell align="left">Author</TableCell>
+                    <TableCell align="left">Status</TableCell>
+                    <TableCell align="left">Conclusion</TableCell>
+                    <TableCell align="left">Action</TableCell>
+                    <TableCell align="left">Started at</TableCell>
+                    <TableCell align="left">Completed at</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {commitData?.commits.map((commit, i) => {
+                    const { conclusion, status } = commit
+                    const completedClass =
+                      conclusion === 'success'
+                        ? classes.success
+                        : classes.failure
+                    const runningClass =
+                      status !== 'completed' ? classes.running : ''
+                    return (
+                      <TableRow
+                        key={
+                          commit.commitSha || `${organisation}${project}${i}`
+                        }
+                        className={runningClass || completedClass}
+                      >
+                        <TableCell align="left">
+                          <a
+                            href={commit.commit.html_url}
+                            target={`commit-url-${commit.head_sha}`}
+                          >
+                            {commit.commit.commit.message.substring(0, 50)}
+                          </a>
+                        </TableCell>
+                        <TableCell align="left">
+                          {commit.commit.commit.author.name}
+                        </TableCell>
+                        <TableCell align="left">{commit.status}</TableCell>
+                        <TableCell align="left">{conclusion}</TableCell>
+                        <TableCell align="left">
+                          <a href={commit.html_url} target={commit.html_url}>
+                            View action
+                          </a>
+                        </TableCell>
+                        <TableCell align="left">
+                          {useDate(commit.started_at)}
+                        </TableCell>
+                        <TableCell align="left">
+                          {useDate(commit.completed_at)}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </CardContent>
         </Collapse>
       </Card>

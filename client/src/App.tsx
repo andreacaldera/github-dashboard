@@ -1,13 +1,25 @@
-import { CssBaseline, ThemeProvider, Typography } from '@material-ui/core'
+import {
+  CssBaseline,
+  makeStyles,
+  ThemeProvider,
+  Typography
+} from '@material-ui/core'
 import React from 'react'
 import { ProjectDashboard } from './project-dashboard'
 import theme from './theme'
 
+const useStyles = makeStyles(theme => ({
+  container: {
+    padding: theme.spacing(1)
+  }
+}))
+
 const App: React.FunctionComponent = () => {
+  const classes = useStyles()
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div>
+      <div className={classes.container}>
         <Typography variant="h3" component="h3">
           Github Dashboard
         </Typography>
