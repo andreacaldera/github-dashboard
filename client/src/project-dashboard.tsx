@@ -3,6 +3,7 @@ import {
   CardContent,
   CardHeader,
   IconButton,
+  Link,
   makeStyles,
   Typography
 } from '@material-ui/core'
@@ -223,7 +224,12 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                           </a>
                         </TableCell>
                         <TableCell align="left">
-                          {commit.commit.commit.author.name}
+                          <Link
+                            href={commit.commit.author?.html_url}
+                            target={commit.commit.author?.html_url}
+                          >
+                            {commit.commit.commit.author.name}
+                          </Link>
                         </TableCell>
                         <TableCell align="left">{commit.status}</TableCell>
                         <TableCell align="left">{conclusion}</TableCell>
