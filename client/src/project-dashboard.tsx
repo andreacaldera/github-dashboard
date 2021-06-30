@@ -39,6 +39,11 @@ const useStyles = makeStyles(theme => ({
       color: `${theme.palette.success.main} !important`
     }
   },
+  runningFont: {
+    '& a': {
+      color: `${theme.palette.warning.light} !important`
+    }
+  },
   failureFont: {
     '& a': {
       color: `${theme.palette.error.main} !important`
@@ -136,6 +141,9 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
       ? classes.successFont
       : classes.failureFont
 
+  const runningProject =
+    firstCommit?.status !== 'completed' ? classes.runningFont : ''
+
   const lastSuccessfulCommit = getLastSuccessfulCommit()
 
   return (
@@ -155,7 +163,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
             </IconButton>
           }
           title={
-            <div className={firstCommit?.conclusion && completedProject}>
+            <div className={runningProject || completedProject}>
               <a
                 href={`https://github.com/${organisation}/${project}/commits`}
                 target={`https://github.com/${organisation}/${project}/commits`}
