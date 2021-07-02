@@ -84,6 +84,25 @@ type Author = {
   html_url: string
 }
 
+export interface ProjectCommit {
+  headSha: string
+  htmlUrl: string
+  author: {
+    name: string
+    htmlUrl: string
+  }
+  status?: string
+  conclusion?: string
+  started_at?: string
+  completed_at?: string
+  commitMessage: string
+}
+
+export interface ProjectStatus {
+  created: string
+  commits: ReadonlyArray<ProjectCommit>
+}
+
 export type Commit = {
   conclusion: string
   status: string
@@ -109,7 +128,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
   project,
   action
 }) => {
-  const [commitData, setCommitData] = useState<CommitData | undefined>()
+  const [commitData, setCommitData] = useState<ProjectStatus | undefined>()
   const {
     getLastCommit,
     getLastSuccessfulCommit,
@@ -210,31 +229,29 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                       status !== 'completed' ? classes.running : ''
                     return (
                       <TableRow
-                        key={
-                          commit.commitSha || `${organisation}${project}${i}`
-                        }
+                        key={commit.headSha || `${organisation}${project}${i}`}
                         className={runningClass || completedClass}
                       >
                         <TableCell align="left">
                           <a
-                            href={commit.commit.html_url}
-                            target={`commit-url-${commit.head_sha}`}
+                            href={commit.htmlUrl}
+                            target={`commit-url-${commit.headSha}`}
                           >
-                            {commit.commit.commit.message.substring(0, 50)}
+                            {commit.commitMessage.substring(0, 50)}
                           </a>
                         </TableCell>
                         <TableCell align="left">
                           <Link
-                            href={commit.commit.author?.html_url}
-                            target={commit.commit.author?.html_url}
+                            href={commit.author.htmlUrl}
+                            target={commit.author.htmlUrl}
                           >
-                            {commit.commit.commit.author.name}
+                            {commit.author.name}
                           </Link>
                         </TableCell>
                         <TableCell align="left">{commit.status}</TableCell>
                         <TableCell align="left">{conclusion}</TableCell>
                         <TableCell align="left">
-                          <a href={commit.html_url} target={commit.html_url}>
+                          <a href={commit.htmlUrl} target={commit.htmlUrl}>
                             View action
                           </a>
                         </TableCell>

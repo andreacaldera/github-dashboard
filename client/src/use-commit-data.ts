@@ -1,12 +1,13 @@
-import { Commit, CommitData } from './project-dashboard'
+import { Commit, ProjectStatus } from './project-dashboard'
 
-export const useCommitData = (commitData?: CommitData) => {
+export const useCommitData = (commitData?: ProjectStatus) => {
   const getLastCommit = () => {
     return commitData ? commitData.commits[0] : null
   }
 
   const getLastSuccessfulCommit = () => {
-    return commitData?.commits.reduce((acc, item) => {
+    // todo any
+    return commitData?.commits.reduce((acc: any, item) => {
       if (acc) {
         return acc
       }
