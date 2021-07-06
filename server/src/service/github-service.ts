@@ -1,33 +1,38 @@
 import cache from 'memory-cache'
 import superagent from 'superagent'
+import { CheckRun as CheckRuns } from '../types/check-run'
+import { Commit } from '../types/commit'
+import { ProjectCommit, ProjectStatus } from '../types/project-status'
 import { getToken } from './get-token'
 
 const dataCache = new cache.Cache()
 
 const CACHE_TIMEOUT = 60 * 1000
 
+const NUMBER_OF_COMMITS = 1
+
 const getCommits = async (
   token: string,
   organisation: string,
   project: string
-): Promise<string[]> => {
+): Promise<Commit[]> => {
   const { body } = await superagent
     .get(`https://api.github.com/repos/${organisation}/${project}/commits`)
     .set('Accept', 'application/vnd.github.v3+json')
     .set('User-Agent', ' curl/7.64.1')
     .set('Authorization', `Bearer ${token}`)
-  const commits = body.slice(0, 10)
+  const commits = body.slice(0, NUMBER_OF_COMMITS)
 
   return commits
 }
 
 const getStatus = async (
-  commit: any,
+  commit: Commit,
   token: string,
   organisation: string,
   project: string,
   action?: string
-) => {
+): Promise<ProjectCommit> => {
   const checkName = action ? `?check_name=${action}` : ''
   const url = `https://api.github.com/repos/${organisation}/${project}/commits/${commit.sha}/check-runs${checkName}`
   const { body } = await superagent
@@ -35,25 +40,39 @@ const getStatus = async (
     .set('Accept', 'application/vnd.github.v3+json')
     .set('User-Agent', ' curl/7.64.1')
     .set('Authorization', `Bearer ${token}`)
-  if (body.total_count !== 1) {
+  const { check_runs = [], total_count } = body as CheckRuns
+  if (total_count !== 1) {
     console.warn(
       `Expected one result but got ${body.total_count} for using ${url}`
     )
   }
+  const author = {
+    htmlUrl: commit.committer.html_url,
+    name: commit.commit.author.name
+  }
 
-  return { ...body.check_runs[0], commit }
+  return {
+    status: check_runs[0]?.status,
+    conclusion: check_runs[0]?.conclusion,
+    started_at: check_runs[0]?.started_at,
+    completed_at: check_runs[0]?.completed_at,
+    headSha: commit.sha,
+    htmlUrl: commit.html_url,
+    author,
+    commitMessage: commit.commit.message
+  }
 }
 
 export const getGithubData = async (
   organisation: string,
   project: string,
   action?: string
-) => {
+): Promise<ProjectStatus> => {
   const token = await getToken()
   const key = `${organisation}/${project}/${action || ''}`
   const cachedData = dataCache.get(key)
   if (cachedData) {
-    return cachedData
+    return cachedData as ProjectStatus
   }
 
   const commits = await getCommits(token, organisation, project)

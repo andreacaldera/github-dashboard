@@ -1,10 +1,10 @@
 import { Link } from '@material-ui/core'
 import React from 'react'
-import { Commit } from './project-dashboard'
+import { ProjectCommit } from './project-status'
 import { useRelativeDate } from './use-date'
 
 type Props = {
-  lastSuccessfulCommit?: Commit
+  lastSuccessfulCommit?: ProjectCommit
 }
 
 export const ProjectSubheader: React.FC<Props> = ({ lastSuccessfulCommit }) => {
@@ -12,17 +12,17 @@ export const ProjectSubheader: React.FC<Props> = ({ lastSuccessfulCommit }) => {
     <>
       Production code:{' '}
       <Link
-        href={lastSuccessfulCommit?.commit.html_url}
-        target={`commit-url-${lastSuccessfulCommit?.head_sha}`}
+        href={lastSuccessfulCommit?.htmlUrl}
+        target={`commit-url-${lastSuccessfulCommit?.headSha}`}
       >
-        {lastSuccessfulCommit?.commit.commit.message.substring(0, 50)}
+        {lastSuccessfulCommit?.commitMessage.substring(0, 50)}
       </Link>{' '}
       by{' '}
       <Link
-        href={lastSuccessfulCommit?.commit.author.html_url}
-        target={lastSuccessfulCommit?.commit.author.html_url}
+        href={lastSuccessfulCommit?.author.htmlUrl}
+        target={lastSuccessfulCommit?.author.htmlUrl}
       >
-        {lastSuccessfulCommit?.commit.commit.author.name}
+        {lastSuccessfulCommit?.author.name}
       </Link>{' '}
       {useRelativeDate(lastSuccessfulCommit?.completed_at)} ago
     </>

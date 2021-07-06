@@ -18,6 +18,7 @@ import TableRow from '@material-ui/core/TableRow'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
+import { ProjectStatus } from './project-status'
 import { ProjectSubheader } from './project-subheader'
 import { useCommitData } from './use-commit-data'
 import { useDate, useRelativeDate } from './use-date'
@@ -79,37 +80,12 @@ interface Props {
   action?: string
 }
 
-type Author = {
-  name: string
-  html_url: string
-}
-
-export type Commit = {
-  conclusion: string
-  status: string
-  commitSha: string
-  head_sha: string
-  started_at?: string
-  completed_at?: string
-  html_url?: string
-  commit: {
-    author: Author
-    html_url?: string
-    commit: { author: Author; message: string }
-  }
-}
-
-export type CommitData = {
-  commits: ReadonlyArray<Commit>
-  created: string
-}
-
 export const ProjectDashboard: React.FunctionComponent<Props> = ({
   organisation,
   project,
   action
 }) => {
-  const [commitData, setCommitData] = useState<CommitData | undefined>()
+  const [commitData, setCommitData] = useState<ProjectStatus | undefined>()
   const {
     getLastCommit,
     getLastSuccessfulCommit,
@@ -210,31 +186,29 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                       status !== 'completed' ? classes.running : ''
                     return (
                       <TableRow
-                        key={
-                          commit.commitSha || `${organisation}${project}${i}`
-                        }
+                        key={commit.headSha || `${organisation}${project}${i}`}
                         className={runningClass || completedClass}
                       >
                         <TableCell align="left">
                           <a
-                            href={commit.commit.html_url}
-                            target={`commit-url-${commit.head_sha}`}
+                            href={commit.htmlUrl}
+                            target={`commit-url-${commit.headSha}`}
                           >
-                            {commit.commit.commit.message.substring(0, 50)}
+                            {commit.commitMessage.substring(0, 50)}
                           </a>
                         </TableCell>
                         <TableCell align="left">
                           <Link
-                            href={commit.commit.author?.html_url}
-                            target={commit.commit.author?.html_url}
+                            href={commit.author.htmlUrl}
+                            target={commit.author.htmlUrl}
                           >
-                            {commit.commit.commit.author.name}
+                            {commit.author.name}
                           </Link>
                         </TableCell>
                         <TableCell align="left">{commit.status}</TableCell>
                         <TableCell align="left">{conclusion}</TableCell>
                         <TableCell align="left">
-                          <a href={commit.html_url} target={commit.html_url}>
+                          <a href={commit.htmlUrl} target={commit.htmlUrl}>
                             View action
                           </a>
                         </TableCell>
