@@ -1,12 +1,9 @@
 import {
-  CssBaseline,
-  makeStyles,
-  ThemeProvider,
+  CssBaseline, makeStyles, ThemeProvider,
   Typography
 } from '@material-ui/core'
-import React from 'react'
-import { ProjectDashboard } from './project-dashboard'
-import theme from './theme'
+import { ProjectDashboard } from '../src/common/project-dashboard'
+import theme from '../src/common/theme'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -14,8 +11,8 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const App: React.FunctionComponent = () => {
-  const classes = useStyles()
+export default function Home() {
+    const classes = useStyles()
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -54,5 +51,3 @@ const App: React.FunctionComponent = () => {
     </ThemeProvider>
   )
 }
-
-export default App

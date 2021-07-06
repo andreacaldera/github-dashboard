@@ -1,31 +1,27 @@
 {
   "name": "github-dashboard",
-  "version": "1.0.0",
-  "description": "`cd client`",
-  "main": "index.js",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
-  "lint-staged": {
-    "**/*.{js,ts,json,json5,md}": [
-      "npm run format"
-    ]
+  "dependencies": {
+    "@material-ui/core": "^4.12.0",
+    "@material-ui/icons": "^4.11.2",
+    "date-fns": "^2.22.1",
+    "memory-cache": "^0.2.0",
+    "next": "10.2.3",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-redux": "^7.2.4",
+    "redux": "^4.1.0",
+    "superagent": "^6.1.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/andreacaldera/github-dashboard.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/andreacaldera/github-dashboard/issues"
-  },
-  "homepage": "https://github.com/andreacaldera/github-dashboard#readme",
-  "dependencies": {},
   "devDependencies": {
-    "husky": "^6.0.0",
-    "lint-staged": "^11.0.0",
-    "prettier": "^2.3.2"
+    "@types/react": "^17.0.7",
+    "prettier": "^2.3.2",
+    "typescript": "^4.2.4"
   }
 }
