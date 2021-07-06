@@ -8,7 +8,6 @@ type Props = {
 }
 
 export const ProjectSubheader: React.FC<Props> = ({ lastSuccessfulCommit }) => {
-  console.log(111, lastSuccessfulCommit)
   return (
     <>
       Production code:{' '}
