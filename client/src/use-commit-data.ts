@@ -1,4 +1,4 @@
-import { Commit, ProjectStatus } from './project-dashboard'
+import { ProjectCommit, ProjectStatus } from './project-status'
 
 export const useCommitData = (commitData?: ProjectStatus) => {
   const getLastCommit = () => {
@@ -12,7 +12,7 @@ export const useCommitData = (commitData?: ProjectStatus) => {
         return acc
       }
       return item.conclusion === 'success' ? item : undefined
-    }, undefined as Commit | undefined)
+    }, undefined as ProjectCommit | undefined)
   }
 
   const getAverageCommitTime = () => {

@@ -18,6 +18,7 @@ import TableRow from '@material-ui/core/TableRow'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
+import { ProjectStatus } from './project-status'
 import { ProjectSubheader } from './project-subheader'
 import { useCommitData } from './use-commit-data'
 import { useDate, useRelativeDate } from './use-date'
@@ -77,50 +78,6 @@ interface Props {
   organisation: string
   project: string
   action?: string
-}
-
-type Author = {
-  name: string
-  html_url: string
-}
-
-export interface ProjectCommit {
-  headSha: string
-  htmlUrl: string
-  author: {
-    name: string
-    htmlUrl: string
-  }
-  status?: string
-  conclusion?: string
-  started_at?: string
-  completed_at?: string
-  commitMessage: string
-}
-
-export interface ProjectStatus {
-  created: string
-  commits: ReadonlyArray<ProjectCommit>
-}
-
-export type Commit = {
-  conclusion: string
-  status: string
-  commitSha: string
-  head_sha: string
-  started_at?: string
-  completed_at?: string
-  html_url?: string
-  commit: {
-    author: Author
-    html_url?: string
-    commit: { author: Author; message: string }
-  }
-}
-
-export type CommitData = {
-  commits: ReadonlyArray<Commit>
-  created: string
 }
 
 export const ProjectDashboard: React.FunctionComponent<Props> = ({
