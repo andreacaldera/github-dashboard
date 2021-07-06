@@ -9,7 +9,7 @@ const dataCache = new cache.Cache()
 
 const CACHE_TIMEOUT = 60 * 1000
 
-const NUMBER_OF_COMMITS = 1
+const NUMBER_OF_COMMITS = 10
 
 const getCommits = async (
   token: string,

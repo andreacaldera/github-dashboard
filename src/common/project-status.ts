@@ -13,6 +13,6 @@ export interface ProjectCommit {
 }
 
 export interface ProjectStatus {
-  created: Date
+  created: string
   commits: ReadonlyArray<ProjectCommit>
 }
