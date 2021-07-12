@@ -1,3 +1,3 @@
 export const testClient = () => {
-  console.log("from client");
-};
+  console.log('from client')
+}

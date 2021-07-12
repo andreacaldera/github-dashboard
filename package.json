@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "prepare": "husky install",
-    "format": "prettier src"
+    "format": "prettier src --write"
   },
   "lint-staged": {
     "**/*.{js,ts,json,json5,md}": [

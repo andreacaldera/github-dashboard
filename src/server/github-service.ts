@@ -48,7 +48,7 @@ const getStatus = async (
   }
   const author = {
     htmlUrl: commit.committer.html_url,
-    name: commit.commit.author.name
+    name: commit.commit.author.name,
   }
 
   return {
@@ -59,7 +59,7 @@ const getStatus = async (
     headSha: commit.sha,
     htmlUrl: commit.html_url,
     author,
-    commitMessage: commit.commit.message
+    commitMessage: commit.commit.message,
   }
 }
 
@@ -77,13 +77,13 @@ export const getGithubData = async (
 
   const commits = await getCommits(token, organisation, project)
   const commitData = await Promise.all(
-    commits.map(commit =>
+    commits.map((commit) =>
       getStatus(commit, token, organisation, project, action)
     )
   )
   const data = {
     created: new Date(),
-    commits: commitData
+    commits: commitData,
   }
 
   console.info(`Data added to cache using key ${key}`)

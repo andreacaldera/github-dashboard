@@ -32,6 +32,6 @@ export const useCommitData = (commitData?: ProjectStatus) => {
   return {
     getLastCommit,
     getLastSuccessfulCommit,
-    getAverageCommitTime
+    getAverageCommitTime,
   }
 }

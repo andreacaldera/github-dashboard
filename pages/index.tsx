@@ -3,18 +3,18 @@ import {
   makeStyles,
   ThemeProvider,
   Typography,
-} from "@material-ui/core";
-import { ProjectDashboard } from "../src/common/project-dashboard";
-import theme from "../src/common/theme";
+} from '@material-ui/core'
+import { ProjectDashboard } from '../src/common/project-dashboard'
+import theme from '../src/common/theme'
 
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(1),
   },
-}));
+}))
 
 export default function Home() {
-  const classes = useStyles();
+  const classes = useStyles()
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -32,5 +32,5 @@ export default function Home() {
         />
       </div>
     </ThemeProvider>
-  );
+  )
 }

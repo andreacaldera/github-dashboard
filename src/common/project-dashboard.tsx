@@ -5,7 +5,7 @@ import {
   IconButton,
   Link,
   makeStyles,
-  Typography
+  Typography,
 } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
 import Paper from '@material-ui/core/Paper'
@@ -25,53 +25,53 @@ import { useDate, useRelativeDate } from './use-date'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   table: {},
   success: {
-    background: theme.palette.success.main
+    background: theme.palette.success.main,
   },
   failure: {
-    background: theme.palette.error.main
+    background: theme.palette.error.main,
   },
   successFont: {
     '& a': {
-      color: `${theme.palette.success.main} !important`
-    }
+      color: `${theme.palette.success.main} !important`,
+    },
   },
   runningFont: {
     '& a': {
-      color: `${theme.palette.warning.light} !important`
-    }
+      color: `${theme.palette.warning.light} !important`,
+    },
   },
   failureFont: {
     '& a': {
-      color: `${theme.palette.error.main} !important`
-    }
+      color: `${theme.palette.error.main} !important`,
+    },
   },
   running: {
-    background: theme.palette.warning.light
+    background: theme.palette.warning.light,
   },
   root: {
     paddingLeft: '5rem',
-    paddingRight: '5rem'
+    paddingRight: '5rem',
   },
   media: {
     height: 0,
-    paddingTop: '56.25%'
+    paddingTop: '56.25%',
   },
   expand: {
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
     transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest
-    })
+      duration: theme.transitions.duration.shortest,
+    }),
   },
   expandOpen: {
-    transform: 'rotate(180deg)'
-  }
+    transform: 'rotate(180deg)',
+  },
 }))
 
 interface Props {
@@ -83,14 +83,11 @@ interface Props {
 export const ProjectDashboard: React.FunctionComponent<Props> = ({
   organisation,
   project,
-  action
+  action,
 }) => {
   const [commitData, setCommitData] = useState<ProjectStatus | undefined>()
-  const {
-    getLastCommit,
-    getLastSuccessfulCommit,
-    getAverageCommitTime
-  } = useCommitData(commitData)
+  const { getLastCommit, getLastSuccessfulCommit, getAverageCommitTime } =
+    useCommitData(commitData)
   const [expanded, setExpanded] = React.useState(false)
   const classes = useStyles()
 
@@ -130,7 +127,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
           action={
             <IconButton
               className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded
+                [classes.expandOpen]: expanded,
               })}
               onClick={() => setExpanded(!expanded)}
               aria-expanded={expanded}
