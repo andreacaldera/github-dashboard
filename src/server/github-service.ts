@@ -1,8 +1,6 @@
 import cache from 'memory-cache'
 import superagent from 'superagent'
-import { CheckRun as CheckRuns } from '../types/check-run'
-import { Commit } from '../types/commit'
-import { ProjectCommit, ProjectStatus } from '../types/project-status'
+
 import { getToken } from './get-token'
 
 const dataCache = new cache.Cache()
@@ -15,7 +13,7 @@ const getCommits = async (
   token: string,
   organisation: string,
   project: string
-): Promise<Commit[]> => {
+): Promise<any[]> => {
   const { body } = await superagent
     .get(`https://api.github.com/repos/${organisation}/${project}/commits`)
     .set('Accept', 'application/vnd.github.v3+json')
@@ -27,12 +25,12 @@ const getCommits = async (
 }
 
 const getStatus = async (
-  commit: Commit,
+  commit: any,
   token: string,
   organisation: string,
   project: string,
   action?: string
-): Promise<ProjectCommit> => {
+): Promise<any> => {
   const checkName = action ? `?check_name=${action}` : ''
   const url = `https://api.github.com/repos/${organisation}/${project}/commits/${commit.sha}/check-runs${checkName}`
   const { body } = await superagent
@@ -40,7 +38,7 @@ const getStatus = async (
     .set('Accept', 'application/vnd.github.v3+json')
     .set('User-Agent', ' curl/7.64.1')
     .set('Authorization', `Bearer ${token}`)
-  const { check_runs = [], total_count } = body as CheckRuns
+  const { check_runs = [], total_count } = body
   if (total_count !== 1) {
     console.warn(
       `Expected one result but got ${body.total_count} for using ${url}`
@@ -67,12 +65,12 @@ export const getGithubData = async (
   organisation: string,
   project: string,
   action?: string
-): Promise<ProjectStatus> => {
+): Promise<any> => {
   const token = await getToken()
   const key = `${organisation}/${project}/${action || ''}`
   const cachedData = dataCache.get(key)
   if (cachedData) {
-    return cachedData as ProjectStatus
+    return cachedData
   }
 
   const commits = await getCommits(token, organisation, project)

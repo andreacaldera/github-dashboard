@@ -4,7 +4,7 @@ import {
   ThemeProvider,
   Typography,
 } from '@material-ui/core'
-import { ProjectDashboard } from '../src/common/project-dashboard'
+import { LighthouseDashboard } from '../src/common/lighthouse-dashboard'
 import theme from '../src/common/theme'
 
 const useStyles = makeStyles((theme) => ({
@@ -19,18 +19,10 @@ export default function Home() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className={classes.container}>
-        <Typography variant="h3" component="h3">
-          Github Dashboard
-        </Typography>
-        <ProjectDashboard
-          organisation="andreacaldera"
-          project="eastendcc-www"
+        <LighthouseDashboard
+          organisation="DigitalInnovation"
+          project="onyx-nx"
         />
-        <ProjectDashboard
-          organisation="andreacaldera"
-          project="eastendcc-api"
-        />
-        <ProjectDashboard organisation="DigitalInnovation" project="onyx-nx" />
       </div>
     </ThemeProvider>
   )
