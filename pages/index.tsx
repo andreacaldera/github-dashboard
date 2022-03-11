@@ -22,15 +22,19 @@ export default function Home() {
         <Typography variant="h3" component="h3">
           Github Dashboard
         </Typography>
-        <ProjectDashboard
+        {/* <ProjectDashboard
           organisation="andreacaldera"
           project="eastendcc-www"
         />
         <ProjectDashboard
           organisation="andreacaldera"
           project="eastendcc-api"
-        />
+        /> */}
         <ProjectDashboard organisation="DigitalInnovation" project="onyx-nx" />
+        <ProjectDashboard
+          organisation="DigitalInnovation"
+          project="jaeger-release"
+        />
       </div>
     </ThemeProvider>
   )

@@ -22,6 +22,8 @@ import { ProjectStatus } from './project-status'
 import { ProjectSubheader } from './project-subheader'
 import { useCommitData } from './use-commit-data'
 import { useDate, useRelativeDate } from './use-date'
+import { Modal, Button } from '@mui/material'
+import styled from '@emotion/styled'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -74,11 +76,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const StyledModal = styled(Modal)`
+  background: white;
+  margin: auto;
+  width: 40vw;
+  height: 20vw;
+`
+
 interface Props {
   organisation: string
   project: string
   action?: string
 }
+
+const StyleButton = styled(Button)`
+  color: black;
+  background: grey;
+`
 
 export const ProjectDashboard: React.FunctionComponent<Props> = ({
   organisation,
@@ -89,6 +103,8 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
   const { getLastCommit, getLastSuccessfulCommit, getAverageCommitTime } =
     useCommitData(commitData)
   const [expanded, setExpanded] = React.useState(false)
+  const [jobSummary, setJobSummary] =
+    useState<ProjectStatus['commits'][0]['jobSummary']>()
   const classes = useStyles()
 
   const fetchFromApi = async () => {
@@ -150,6 +166,24 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
             <ProjectSubheader lastSuccessfulCommit={lastSuccessfulCommit} />
           }
         />
+        <StyledModal open={!!jobSummary}>
+          <>
+            <StyleButton onClick={() => setJobSummary(undefined)}>
+              Close
+            </StyleButton>
+            <ul>
+              {jobSummary?.map(({ name, conclusion }) => {
+                const completedClass =
+                  conclusion === 'success' ? classes.success : classes.failure
+                return (
+                  <li className={completedClass}>
+                    {name}: {conclusion}
+                  </li>
+                )
+              })}
+            </ul>
+          </>
+        </StyledModal>
 
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
@@ -193,7 +227,19 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                           >
                             {commit.commitMessage.substring(0, 50)}
                           </a>
+                          <StyleButton
+                            onClick={() => setJobSummary(commit.jobSummary)}
+                          >
+                            Job summary
+                          </StyleButton>
                         </TableCell>
+                        {/* <TableCell align="left">
+                          {commit.jobSummary
+                            .map(
+                              ({ name, conclusion }) => `${name}: ${conclusion}`
+                            )
+                            .join('\n')}
+                        </TableCell> */}
                         <TableCell align="left">
                           <Link
                             href={commit.author.htmlUrl}

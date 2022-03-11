@@ -3,7 +3,7 @@ import { Scores } from './lighthouse-type'
 import { TrendIndicator } from './trend-indicator'
 
 const getColour = (score: number): string => {
-  if (score > 80) {
+  if (score > 90) {
     return 'green'
   }
   if (score > 60) {

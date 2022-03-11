@@ -10,6 +10,7 @@ export interface ProjectCommit {
   started_at?: string
   completed_at?: string
   commitMessage: string
+  jobSummary: ReadonlyArray<{ name: string; conclusion: string }>
 }
 
 export interface ProjectStatus {

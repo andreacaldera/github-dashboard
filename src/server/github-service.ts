@@ -39,6 +39,12 @@ const getStatus = async (
     .set('User-Agent', ' curl/7.64.1')
     .set('Authorization', `Bearer ${token}`)
   const { check_runs = [], total_count } = body
+
+  const jobSummary = body.check_runs.map(({ name, conclusion }) => ({
+    name,
+    conclusion,
+  }))
+
   if (total_count !== 1) {
     console.warn(
       `Expected one result but got ${body.total_count} for using ${url}`
@@ -49,9 +55,23 @@ const getStatus = async (
     name: commit.commit.author.name,
   }
 
+  const conclusion = body.check_runs.reduce((result, { conclusion }) => {
+    if (conclusion === 'skipped') {
+      return result || conclusion
+    }
+    if (conclusion === 'success' && (result === 'success' || !result)) {
+      return conclusion
+    }
+    if (conclusion === 'failure') {
+      return conclusion
+    }
+    return result
+  }, '')
+
   return {
     status: check_runs[0]?.status,
-    conclusion: check_runs[0]?.conclusion,
+    conclusion,
+    jobSummary,
     started_at: check_runs[0]?.started_at,
     completed_at: check_runs[0]?.completed_at,
     headSha: commit.sha,
@@ -74,6 +94,7 @@ export const getGithubData = async (
   }
 
   const commits = await getCommits(token, organisation, project)
+
   const commitData = await Promise.all(
     commits.map((commit) =>
       getStatus(commit, token, organisation, project, action)
