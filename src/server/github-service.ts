@@ -86,7 +86,7 @@ export const getGithubData = async (
   project: string,
   action?: string
 ): Promise<any> => {
-  const token = await getToken()
+  const token = getToken()
   const key = `${organisation}/${project}/${action || ''}`
   const cachedData = dataCache.get(key)
   if (cachedData) {
@@ -115,7 +115,7 @@ export const getReleaseJobData = async (
   project: string,
   action?: string
 ): Promise<any> => {
-  const token = await getToken()
+  const token = getToken()
   // const key = `${organisation}/${project}/${action || ''}`
   // const cachedData = dataCache.get(key)
   // if (cachedData) {
