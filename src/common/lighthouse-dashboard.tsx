@@ -64,6 +64,9 @@ export const LighthouseDashboard: React.FunctionComponent<Props> = ({
     const data = await fetch(
       `/api/lighthouse-score?organisation=${organisation}&project=${project}`
     )
+    if (data.status >= 400) {
+      console.error('Unable to retrieve data')
+    }
     const body = await data.json()
     setLighthouseData(body.scores)
   }

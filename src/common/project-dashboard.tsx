@@ -92,7 +92,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
     useCommitData(commitData)
   const [expanded, setExpanded] = React.useState(false)
   const [jobSummary, setJobSummary] =
-    useState<ProjectStatus['commits'][0]['jobSummary']>()
+    useState<ProjectStatus['data'][0]['jobSummary']>()
   const classes = useStyles()
 
   const fetchFromApi = async () => {
@@ -101,7 +101,8 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
         action ? `&action=${action}` : ''
       }`
     )
-    if (!data.ok) {
+    console.log('status', data.status)
+    if (data.status >= 400) {
       console.error('Unable to retrieve data')
     }
     const body = await data.json()
@@ -185,7 +186,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
               Average execution time: {getAverageCommitTime()} minutes
             </Typography>
             <TableContainer component={Paper}>
-              <Table className={classes.table} aria-label="simple table">
+              <Table aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">Commit</TableCell>
@@ -198,7 +199,7 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {commitData?.commits.map((commit, i) => {
+                  {commitData?.data.map((commit, i) => {
                     const { conclusion, status } = commit
                     const completedClass =
                       conclusion === 'success'

@@ -9,16 +9,22 @@ const CACHE_TIMEOUT = 60 * 1000
 
 const NUMBER_OF_COMMITS = 10
 
-const getCommits = async (
-  token: string,
-  organisation: string,
-  project: string
-): Promise<any[]> => {
+const githubApi = async (path: string) => {
+  const token = getToken()
+  const url = `https://api.github.com/${path}`
   const { body } = await superagent
-    .get(`https://api.github.com/repos/${organisation}/${project}/commits`)
+    .get(url)
     .set('Accept', 'application/vnd.github.v3+json')
     .set('User-Agent', ' curl/7.64.1')
     .set('Authorization', `Bearer ${token}`)
+  return body
+}
+
+const getCommits = async (
+  organisation: string,
+  project: string
+): Promise<any[]> => {
+  const body = await githubApi(`repos/${organisation}/${project}/commits`)
   const commits = body.slice(0, NUMBER_OF_COMMITS)
 
   return commits
@@ -26,18 +32,14 @@ const getCommits = async (
 
 const getStatus = async (
   commit: any,
-  token: string,
   organisation: string,
   project: string,
   action?: string
 ): Promise<any> => {
   const checkName = action ? `?check_name=${action}` : ''
-  const url = `https://api.github.com/repos/${organisation}/${project}/commits/${commit.sha}/check-runs${checkName}`
-  const { body } = await superagent
-    .get(url)
-    .set('Accept', 'application/vnd.github.v3+json')
-    .set('User-Agent', ' curl/7.64.1')
-    .set('Authorization', `Bearer ${token}`)
+  const body = await githubApi(
+    `repos/${organisation}/${project}/commits/${commit.sha}/check-runs${checkName}`
+  )
   const { check_runs = [], total_count } = body
 
   const jobSummary = body.check_runs.map(({ name, conclusion }) => ({
@@ -46,9 +48,7 @@ const getStatus = async (
   }))
 
   if (total_count !== 1) {
-    console.warn(
-      `Expected one result but got ${body.total_count} for using ${url}`
-    )
+    console.warn(`Expected one result but got ${body.total_count}`)
   }
   const author = {
     htmlUrl: commit.committer.html_url,
@@ -81,78 +81,53 @@ const getStatus = async (
   }
 }
 
+const cacheResponse = async (
+  cacheKey: string,
+  loader: () => Promise<any>
+): Promise<any> => {
+  const cachedData = dataCache.get(cacheKey)
+  if (cachedData) {
+    return cachedData
+  }
+  const data = {
+    created: new Date(),
+    data: await loader(),
+  }
+
+  dataCache.put(cacheKey, data, CACHE_TIMEOUT)
+  console.info(`Data added to cache using key ${cacheKey}`)
+  return data
+}
+
 export const getGithubData = async (
   organisation: string,
   project: string,
   action?: string
 ): Promise<any> => {
-  const token = getToken()
   const key = `${organisation}/${project}/${action || ''}`
-  const cachedData = dataCache.get(key)
-  if (cachedData) {
-    return cachedData
-  }
-
-  const commits = await getCommits(token, organisation, project)
-
-  const commitData = await Promise.all(
-    commits.map((commit) =>
-      getStatus(commit, token, organisation, project, action)
+  return cacheResponse(key, async () => {
+    console.log(1)
+    const commits = await getCommits(organisation, project)
+    console.log(2)
+    const commitData = await Promise.all(
+      commits.map((commit) => getStatus(commit, organisation, project, action))
     )
-  )
-  const data = {
-    created: new Date(),
-    commits: commitData,
-  }
-
-  console.info(`Data added to cache using key ${key}`)
-  dataCache.put(key, data, CACHE_TIMEOUT)
-  return data
+    console.log(3)
+    return commitData
+  })
 }
 
 export const getReleaseJobData = async (
   organisation: string,
-  project: string,
-  action?: string
+  project: string
 ): Promise<any> => {
-  const token = getToken()
-  // const key = `${organisation}/${project}/${action || ''}`
-  // const cachedData = dataCache.get(key)
-  // if (cachedData) {
-  //   return cachedData
-  // }
+  const key = `actions/${organisation}/${project}`
+  return cacheResponse(key, async () => {
+    const body = await githubApi(
+      `repos/${organisation}/${project}/actions/runs`
+    )
 
-  // const data = {
-  //   created: new Date(),
-  //   commits: commitData,
-  // }
-
-  // console.info(`Data added to cache using key ${key}`)
-  // dataCache.put(key, data, CACHE_TIMEOUT)
-
-  // const body = await request('POST /repos/:owner/:repo/check-runs', {
-  //   headers: {
-  //     authorization: `token ${token}`,
-  //   },
-  //   owner: organisation,
-  //   repo: project,
-  //   name: 'Release',
-  //   // status: 'completed',
-  //   // conclusion: 'success',
-  //   // output: {
-  //   //   title: 'All tests passed',
-  //   //   summary: '123 out of 123 tests passed in 1:23 minutes',
-  //   //   // more options: https://developer.github.com/v3/checks/runs/#output-object
-  //   // },
-
-  // /repos/{owner}/{repo}/actions/runs/{run_id}/jobs
-  const url = `https://api.github.com/repos/${organisation}/${project}/actions/runs`
-  const { body } = await superagent
-    .get(url)
-    .set('Accept', 'application/vnd.github.v3+json')
-    .set('User-Agent', ' curl/7.64.1')
-    .set('Authorization', `Bearer ${token}`)
-
-  const releases = body.workflow_runs.filter(({ name }) => name === 'Release')
-  return { created: new Date(), actions: releases }
+    const releases = body.workflow_runs.filter(({ name }) => name === 'Release')
+    return releases
+  })
 }

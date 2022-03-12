@@ -8,6 +8,7 @@ import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import { StatusRow } from './components/status-row'
+import { useRelativeDate } from './use-date'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -30,7 +31,8 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
         action ? `&action=${action}` : ''
       }`
     )
-    if (!data.ok) {
+    console.log('status', data.status)
+    if (data.status >= 400) {
       console.error('Unable to retrieve data')
     }
     const body = await data.json()
@@ -54,7 +56,11 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
               href={`https://github.com/${organisation}/${project}/actions/workflows/${action}.yml`}
               target={`https://github.com/${organisation}/${project}/actions/workflows/${action}.yml`}
             >
-              {organisation} / {project}
+              {organisation} / {project} /{' '}
+              {useRelativeDate(actionsData?.created, {
+                defaultMessage: 'Loading...',
+                prefix: 'Updated ',
+              })}
             </a>
           </div>
         }
@@ -72,7 +78,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {actionsData?.actions.map((actionData, i) => {
+            {actionsData?.data.map((actionData, i) => {
               const { conclusion, status } = actionData
               return (
                 <StatusRow

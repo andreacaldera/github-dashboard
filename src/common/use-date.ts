@@ -6,6 +6,11 @@ export const useDate = (date?: string, prefix = ''): string => {
     : ''
 }
 
-export const useRelativeDate = (date?: string): string => {
-  return date ? formatDistance(new Date(), new Date(date)) : ''
+export const useRelativeDate = (
+  date?: string,
+  config: { defaultMessage?: string; prefix?: string } = { defaultMessage: '' }
+): string => {
+  return date
+    ? `${config.prefix}${formatDistance(new Date(), new Date(date))}`
+    : config.defaultMessage
 }

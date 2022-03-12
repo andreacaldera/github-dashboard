@@ -15,7 +15,7 @@ export interface ProjectCommit {
 
 export interface ProjectStatus {
   created: string
-  commits: ReadonlyArray<ProjectCommit>
+  data: ReadonlyArray<ProjectCommit>
 }
 
 export interface ActionStatus {
@@ -30,5 +30,5 @@ export interface ActionStatus {
 
 export interface ActionsStatus {
   created: string
-  actions: ReadonlyArray<ActionStatus>
+  data: ReadonlyArray<ActionStatus>
 }

@@ -2,12 +2,12 @@ import { ProjectCommit, ProjectStatus } from './project-status'
 
 export const useCommitData = (commitData?: ProjectStatus) => {
   const getLastCommit = () => {
-    return commitData ? commitData.commits[0] : null
+    return commitData ? commitData.data[0] : null
   }
 
   const getLastSuccessfulCommit = () => {
     // todo any
-    return commitData?.commits.reduce((acc: any, item) => {
+    return commitData?.data.reduce((acc: any, item) => {
       if (acc) {
         return acc
       }
@@ -17,7 +17,7 @@ export const useCommitData = (commitData?: ProjectStatus) => {
 
   const getAverageCommitTime = () => {
     const completedCommits =
-      commitData?.commits.filter(
+      commitData?.data.filter(
         ({ started_at, completed_at }) => started_at && completed_at
       ) || []
     const totalTime = completedCommits.reduce((acc, item) => {
