@@ -29,10 +29,6 @@ import { StyleButton } from './components/button'
 const DATA_FETCH_INTERVAL = 60 * 1000
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    marginTop: theme.spacing(2),
-  },
-  table: {},
   success: {
     background: theme.palette.success.main,
   },
@@ -56,10 +52,6 @@ const useStyles = makeStyles((theme) => ({
   },
   running: {
     background: theme.palette.warning.light,
-  },
-  root: {
-    paddingLeft: '5rem',
-    paddingRight: '5rem',
   },
   media: {
     height: 0,
@@ -109,6 +101,9 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
         action ? `&action=${action}` : ''
       }`
     )
+    if (!data.ok) {
+      console.error('Unable to retrieve data')
+    }
     const body = await data.json()
     setCommitData(body)
   }
@@ -133,8 +128,8 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
   const lastSuccessfulCommit = getLastSuccessfulCommit()
 
   return (
-    <div className={classes.container}>
-      <Card className={`${classes.root}`}>
+    <div>
+      <Card>
         <CardHeader
           action={
             <IconButton

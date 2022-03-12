@@ -1,6 +1,8 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
+const ONE_MONTH = 30 * 24 * 60 * 60
+
 export default NextAuth({
   providers: [
     CredentialsProvider({
@@ -14,9 +16,10 @@ export default NextAuth({
         },
       },
       async authorize(credentials, req) {
+        console.log('authorise', credentials)
         if (
-          credentials.username === 'andrea' &&
-          credentials.password === 'test'
+          credentials?.username === 'andrea' &&
+          credentials?.password === 'test'
         ) {
           return { email: credentials.username }
         }
@@ -25,6 +28,12 @@ export default NextAuth({
     }),
   ],
   session: {
-    maxAge: 60 * 10,
+    maxAge: ONE_MONTH,
+  },
+  callbacks: {
+    async jwt({ token }) {
+      token.userRole = 'admin'
+      return token
+    },
   },
 })

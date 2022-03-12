@@ -1,9 +1,15 @@
+import { getSession } from 'next-auth/react'
 import {
   getGithubData,
   getReleaseJobData,
 } from '../../src/server/github-service'
 
 export default async (req, res) => {
+  const session = await getSession({ req })
+
+  if (!session) {
+    return res.status(401).end()
+  }
   const organisation = req.query.organisation as string
   const project = req.query.project as string
   const action = req.query.action as string | undefined

@@ -26,10 +26,13 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
 
   const fetchFromApi = async () => {
     const data = await fetch(
-      `/api/test?organisation=${organisation}&project=${project}${
+      `/api/action-summary?organisation=${organisation}&project=${project}${
         action ? `&action=${action}` : ''
       }`
     )
+    if (!data.ok) {
+      console.error('Unable to retrieve data')
+    }
     const body = await data.json()
     setActionsData(body)
   }
