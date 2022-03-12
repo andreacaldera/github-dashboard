@@ -24,6 +24,7 @@ import { useCommitData } from './use-commit-data'
 import { useDate, useRelativeDate } from './use-date'
 import { Modal, Button } from '@mui/material'
 import styled from '@emotion/styled'
+import { StyleButton } from './components/button'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -88,11 +89,6 @@ interface Props {
   project: string
   action?: string
 }
-
-const StyleButton = styled(Button)`
-  color: black;
-  background: grey;
-`
 
 export const ProjectDashboard: React.FunctionComponent<Props> = ({
   organisation,
@@ -233,13 +229,6 @@ export const ProjectDashboard: React.FunctionComponent<Props> = ({
                             Job summary
                           </StyleButton>
                         </TableCell>
-                        {/* <TableCell align="left">
-                          {commit.jobSummary
-                            .map(
-                              ({ name, conclusion }) => `${name}: ${conclusion}`
-                            )
-                            .join('\n')}
-                        </TableCell> */}
                         <TableCell align="left">
                           <Link
                             href={commit.author.htmlUrl}

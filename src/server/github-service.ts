@@ -109,3 +109,50 @@ export const getGithubData = async (
   dataCache.put(key, data, CACHE_TIMEOUT)
   return data
 }
+
+export const getReleaseJobData = async (
+  organisation: string,
+  project: string,
+  action?: string
+): Promise<any> => {
+  const token = await getToken()
+  // const key = `${organisation}/${project}/${action || ''}`
+  // const cachedData = dataCache.get(key)
+  // if (cachedData) {
+  //   return cachedData
+  // }
+
+  // const data = {
+  //   created: new Date(),
+  //   commits: commitData,
+  // }
+
+  // console.info(`Data added to cache using key ${key}`)
+  // dataCache.put(key, data, CACHE_TIMEOUT)
+
+  // const body = await request('POST /repos/:owner/:repo/check-runs', {
+  //   headers: {
+  //     authorization: `token ${token}`,
+  //   },
+  //   owner: organisation,
+  //   repo: project,
+  //   name: 'Release',
+  //   // status: 'completed',
+  //   // conclusion: 'success',
+  //   // output: {
+  //   //   title: 'All tests passed',
+  //   //   summary: '123 out of 123 tests passed in 1:23 minutes',
+  //   //   // more options: https://developer.github.com/v3/checks/runs/#output-object
+  //   // },
+
+  // /repos/{owner}/{repo}/actions/runs/{run_id}/jobs
+  const url = `https://api.github.com/repos/${organisation}/${project}/actions/runs`
+  const { body } = await superagent
+    .get(url)
+    .set('Accept', 'application/vnd.github.v3+json')
+    .set('User-Agent', ' curl/7.64.1')
+    .set('Authorization', `Bearer ${token}`)
+
+  const releases = body.workflow_runs.filter(({ name }) => name === 'Release')
+  return { created: new Date(), actions: releases }
+}

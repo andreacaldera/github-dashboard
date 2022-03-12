@@ -17,3 +17,18 @@ export interface ProjectStatus {
   created: string
   commits: ReadonlyArray<ProjectCommit>
 }
+
+export interface ActionStatus {
+  id: number
+  name: string
+  status: string
+  conclusion: 'success' | 'failure' | 'skipped'
+  html_url: string
+  run_number: string
+  head_sha: string
+}
+
+export interface ActionsStatus {
+  created: string
+  actions: ReadonlyArray<ActionStatus>
+}
