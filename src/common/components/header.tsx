@@ -1,4 +1,3 @@
-// import Link from 'next/link'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import * as React from 'react'
 import AppBar from '@mui/material/AppBar'
@@ -9,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import Menu from '@mui/material/Menu'
 import MenuIcon from '@mui/icons-material/Menu'
 import Container from '@mui/material/Container'
+import Link from 'next/link'
 
 import MenuItem from '@mui/material/MenuItem'
 import styled from '@emotion/styled'
@@ -18,14 +18,19 @@ const MenuButton = styled(StyleButton)`
   margin-left: 1rem !important;
 `
 
-const pages = ['Action Dashboard', 'Lighthouse Report']
+const pages = [
+  { label: 'Action Dashboard', link: '/' },
+  { label: 'Lighthouse Report', link: '/lighthouse' },
+  { label: 'Pairing Schedule', link: '/pairing' },
+]
 
 export const Header = () => {
   const { data: session, status } = useSession()
   const loading = status === 'loading'
+  console.log(loading)
+  // todo handle loading
 
   const [anchorElNav, setAnchorElNav] = React.useState(null)
-  const [anchorElUser, setAnchorElUser] = React.useState(null)
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget)
@@ -78,8 +83,10 @@ export const Header = () => {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">
+                    <Link href={page.link}>{page.label}</Link>
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -95,11 +102,11 @@ export const Header = () => {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <MenuButton
-                key={page}
+                key={page.label}
                 onClick={handleCloseNavMenu}
                 sx={{ ml: 2, color: 'white', display: 'block' }}
               >
-                {page}
+                <Link href={page.link}>{page.label}</Link>
               </MenuButton>
             ))}
           </Box>

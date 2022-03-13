@@ -1,9 +1,4 @@
-import {
-  CssBaseline,
-  makeStyles,
-  ThemeProvider,
-  Typography,
-} from '@material-ui/core'
+import { CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core'
 import { LighthouseDashboard } from '../src/common/lighthouse-dashboard'
 import theme from '../src/common/theme'
 
