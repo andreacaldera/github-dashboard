@@ -7,6 +7,7 @@ import {
   nextMonday,
   nextWednesday,
 } from 'date-fns'
+import { useSession } from 'next-auth/react'
 
 const names = [
   'Andrea',
@@ -51,29 +52,21 @@ const nameLists = indexes.reduce((acc, index) => {
   ]
 }, [] as PairingList)
 
-console.log(nameLists)
-
 const pairs = nameLists.map((n) => {
-  console.log('processing', n.pairs)
   return {
     date: n.date,
     pairs: n.pairs.reduce((acc, item, index) => {
       if (index % 2 === 1) {
         return acc
       }
-      console.log(222, item)
       if (index < n.pairs.length) {
         const p = [item, n.pairs[index + 1]] as [string, string | undefined]
-        console.log('adding pair', p)
-        const result = [...acc, p]
-        return result
+        return [...acc, p]
       }
       return acc
     }, [] as [string, string | undefined][]),
   }
 })
-
-console.log(111, pairs)
 
 const StyledPair = styled.span`
   display: inline-block;
@@ -109,6 +102,10 @@ const Pair = ({
 }
 
 const Pairing = () => {
+  const { data: session } = useSession()
+  if (!session?.user) {
+    return <p>Please login to access this page</p>
+  }
   return (
     <>
       <h1>Pairing</h1>
