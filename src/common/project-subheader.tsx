@@ -24,7 +24,8 @@ export const ProjectSubheader: React.FC<Props> = ({ lastSuccessfulCommit }) => {
       >
         {lastSuccessfulCommit?.author.name}
       </Link>{' '}
-      {useRelativeDate(lastSuccessfulCommit?.completed_at)} ago
+      {useRelativeDate(lastSuccessfulCommit?.completed_at)}
+      ago
     </>
   )
 }

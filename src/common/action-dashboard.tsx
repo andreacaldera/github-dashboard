@@ -8,7 +8,6 @@ import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import { StatusRow } from './components/status-row'
-import { useRelativeDate } from './use-date'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -50,17 +49,14 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
   return (
     <div>
       <ProjectCard
+        lastUpdated={actionsData?.created}
         title={
           <div>
             <a
               href={`https://github.com/${organisation}/${project}/actions/workflows/${action}.yml`}
               target={`https://github.com/${organisation}/${project}/actions/workflows/${action}.yml`}
             >
-              {organisation} / {project} /{' '}
-              {useRelativeDate(actionsData?.created, {
-                defaultMessage: 'Loading...',
-                prefix: 'Updated ',
-              })}
+              {organisation} / {project}
             </a>
           </div>
         }

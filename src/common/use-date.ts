@@ -6,11 +6,18 @@ export const useDate = (date?: string, prefix = ''): string => {
     : ''
 }
 
+type Config = { defaultMessage?: string; prefix?: string }
+
+const defaultConfig: Config = {
+  defaultMessage: '',
+  prefix: '',
+}
+
 export const useRelativeDate = (
   date?: string,
-  config: { defaultMessage?: string; prefix?: string } = { defaultMessage: '' }
+  config: Config = defaultConfig
 ): string => {
   return date
-    ? `${config.prefix}${formatDistance(new Date(), new Date(date))}`
+    ? `${config.prefix}${formatDistance(new Date(), new Date(date))} ago`
     : config.defaultMessage
 }

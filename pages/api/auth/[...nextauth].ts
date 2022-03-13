@@ -16,7 +16,6 @@ export default NextAuth({
         },
       },
       async authorize(credentials, req) {
-        console.log('authorise', credentials)
         if (
           credentials?.username === 'andrea' &&
           credentials?.password === 'test'

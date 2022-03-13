@@ -10,9 +10,10 @@ import Paper from '@material-ui/core/Paper'
 import TableContainer from '@material-ui/core/TableContainer'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
-import { ProjectSubheader } from '../project-subheader'
+import styled from '@emotion/styled'
 import clsx from 'clsx'
 import { Card } from '@mui/material'
+import { useRelativeDate } from '../use-date'
 
 const useStyles = makeStyles((theme) => ({
   expand: {
@@ -27,16 +28,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const StyledCard = styled(Card)`
+  margin: 1rem 0;
+`
+
 type Props = {
   title: React.ReactElement
+  lastUpdated?: string
   children: React.ReactElement
 }
 
-export const ProjectCard = ({ title, children }: Props) => {
+export const ProjectCard = ({ title, children, lastUpdated }: Props) => {
   const classes = useStyles()
   const [expanded, setExpanded] = React.useState(false)
   return (
-    <Card>
+    <StyledCard>
       <CardHeader
         action={
           <IconButton
@@ -51,7 +57,10 @@ export const ProjectCard = ({ title, children }: Props) => {
           </IconButton>
         }
         title={title}
-        subheader={<ProjectSubheader />}
+        subheader={useRelativeDate(lastUpdated, {
+          defaultMessage: 'Loading...',
+          prefix: 'Updated ',
+        })}
       />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
@@ -64,6 +73,6 @@ export const ProjectCard = ({ title, children }: Props) => {
           <TableContainer component={Paper}>{children}</TableContainer>
         </CardContent>
       </Collapse>
-    </Card>
+    </StyledCard>
   )
 }

@@ -48,7 +48,6 @@ export const getPrData = async (
       .set('Accept', 'application/vnd.github.v3+json')
       .set('User-Agent', ' curl/7.64.1')
       .set('Authorization', `Bearer ${token}`)
-    console.log(body)
     return { title: body.title, mergedAt: body.merged_at }
   } catch {
     return undefined

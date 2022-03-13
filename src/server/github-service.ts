@@ -106,14 +106,10 @@ export const getGithubData = async (
 ): Promise<any> => {
   const key = `${organisation}/${project}/${action || ''}`
   return cacheResponse(key, async () => {
-    console.log(1)
     const commits = await getCommits(organisation, project)
-    console.log(2)
-    const commitData = await Promise.all(
+    return Promise.all(
       commits.map((commit) => getStatus(commit, organisation, project, action))
     )
-    console.log(3)
-    return commitData
   })
 }
 
