@@ -51,15 +51,20 @@ const nameLists = indexes.reduce((acc, index) => {
   ]
 }, [] as PairingList)
 
+console.log(nameLists)
+
 const pairs = nameLists.map((n) => {
+  console.log('processing', n.pairs)
   return {
     date: n.date,
     pairs: n.pairs.reduce((acc, item, index) => {
       if (index % 2 === 1) {
         return acc
       }
-      if (index < names.length) {
-        const p = [item, names[index + 1]] as [string, string | undefined]
+      console.log(222, item)
+      if (index < n.pairs.length) {
+        const p = [item, n.pairs[index + 1]] as [string, string | undefined]
+        console.log('adding pair', p)
         const result = [...acc, p]
         return result
       }
@@ -67,6 +72,8 @@ const pairs = nameLists.map((n) => {
     }, [] as [string, string | undefined][]),
   }
 })
+
+console.log(111, pairs)
 
 const StyledPair = styled.span`
   display: inline-block;
