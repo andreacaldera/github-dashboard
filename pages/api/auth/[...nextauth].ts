@@ -3,6 +3,12 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 
 const ONE_MONTH = 30 * 24 * 60 * 60
 
+const users = process.env.USERS.split(';').reduce((result, user) => {
+  return { ...result, [user.split('|')[0]]: user.split('|')[1] }
+}, {})
+
+console.log(users)
+
 export default NextAuth({
   providers: [
     CredentialsProvider({
@@ -16,10 +22,7 @@ export default NextAuth({
         },
       },
       async authorize(credentials, req) {
-        if (
-          credentials?.username === 'andrea' &&
-          credentials?.password === 'test'
-        ) {
+        if (users[credentials.username] === credentials?.password) {
           return { email: credentials.username }
         }
         return null
