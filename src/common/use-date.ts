@@ -1,4 +1,4 @@
-import { format, formatDistance } from 'date-fns'
+import { format, formatDistance, differenceInMinutes } from 'date-fns'
 
 export const useDate = (date?: string, prefix = ''): string => {
   return date
@@ -20,4 +20,11 @@ export const useRelativeDate = (
   return date
     ? `${config.prefix}${formatDistance(new Date(), new Date(date))} ago`
     : config.defaultMessage
+}
+
+export const useDateDifference = (fromDate?: string, toDate?: string) => {
+  if (!fromDate || !toDate) {
+    return 'N/A'
+  }
+  return differenceInMinutes(new Date(toDate), new Date(fromDate))
 }

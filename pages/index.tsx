@@ -18,17 +18,34 @@ const Home = () => {
                 organisation="andreacaldera"
                 project="eastendcc-www"
               /> */}
-      <ProjectDashboard organisation="DigitalInnovation" project="onyx-nx" />
+
+      <Typography variant="h3">Jaeger</Typography>
       <ActionDashboard
         organisation="DigitalInnovation"
         project="onyx-nx"
         action="Release"
+        nxApp="jaeger"
       />
       <ActionDashboard
         organisation="DigitalInnovation"
         project="jaeger-release"
         action="Release"
       />
+      <Typography variant="h3">Browse</Typography>
+      <ActionDashboard
+        organisation="DigitalInnovation"
+        project="onyx-nx"
+        action="Release"
+        nxApp="browse"
+      />
+      <ActionDashboard
+        organisation="DigitalInnovation"
+        project="browse-release"
+        action="Release"
+      />
+
+      <p>Broken :(</p>
+      <ProjectDashboard organisation="DigitalInnovation" project="onyx-nx" />
     </>
   )
 }

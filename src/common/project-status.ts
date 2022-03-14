@@ -31,6 +31,11 @@ export interface ActionStatus {
     avatar_url: string
     html_url: string
   }
+  head_commit: {
+    message: string
+  }
+  created_at: string
+  updated_at: string
 }
 
 export interface ActionsStatus {

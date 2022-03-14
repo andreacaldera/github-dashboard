@@ -5,13 +5,15 @@ import { getToken } from './get-token'
 
 const dataCache = new cache.Cache()
 
-const CACHE_TIMEOUT = 1 * 1000
+const CACHE_TIMEOUT = 60 * 1000
 
 const NUMBER_OF_COMMITS = 10
 
-export const githubApi = async (path: string) => {
+export const githubApi = async (endpoint: string) => {
   const token = getToken()
-  const url = `https://api.github.com/${path}`
+  const url = endpoint.startsWith('http')
+    ? endpoint
+    : `https://api.github.com/${endpoint}`
   const { body } = await superagent
     .get(url)
     .set('Accept', 'application/vnd.github.v3+json')
@@ -113,16 +115,25 @@ export const getGithubData = async (
 export const getReleaseJobData = async (
   organisation: string,
   project: string,
-  action: string
+  action: string,
+  nxApp?: string
 ): Promise<any> => {
-  const key = `actions/${organisation}/${project}`
+  const key = `actions/${organisation}/${project}/${nxApp || '_no_app'}`
 
   return cacheResponse(key, async () => {
     const body = await githubApi(
-      `repos/${organisation}/${project}/actions/runs?exclude_pull_requests=false&branch=main`
+      `repos/${organisation}/${project}/actions/runs?&exclude_pull_requests=false&branch=main`
     )
 
     const releases = body.workflow_runs.filter(({ name }) => name === action)
-    return releases
+    const withJobs = await Promise.all(
+      releases.map(async (r) => {
+        const jobs = await githubApi(r.jobs_url)
+        return { ...r, jobs }
+      })
+    )
+    return withJobs.filter(({ jobs }) => {
+      return !nxApp || jobs.jobs.some(({ name }) => name.includes(nxApp))
+    })
   })
 }
