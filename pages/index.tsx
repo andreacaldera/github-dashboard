@@ -21,8 +21,13 @@ const Home = () => {
       <ProjectDashboard organisation="DigitalInnovation" project="onyx-nx" />
       <ActionDashboard
         organisation="DigitalInnovation"
+        project="onyx-nx"
+        action="Release"
+      />
+      <ActionDashboard
+        organisation="DigitalInnovation"
         project="jaeger-release"
-        action="release"
+        action="Release"
       />
     </>
   )

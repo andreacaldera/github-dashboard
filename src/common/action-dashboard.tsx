@@ -8,6 +8,7 @@ import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import { StatusRow } from './components/status-row'
+import styled from '@emotion/styled'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -16,6 +17,11 @@ interface Props {
   project: string
   action: string
 }
+
+const Avatar = styled.img`
+  width: 1r.5em;
+  height: 1.5rem;
+`
 
 export const ActionDashboard: React.FunctionComponent<Props> = ({
   organisation,
@@ -26,9 +32,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
 
   const fetchFromApi = async () => {
     const data = await fetch(
-      `/api/action-summary?organisation=${organisation}&project=${project}${
-        action ? `&action=${action}` : ''
-      }`
+      `/api/action-summary?organisation=${organisation}&project=${project}&action=${action}`
     )
     console.log('status', data.status)
     if (data.status >= 400) {
@@ -90,7 +94,15 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                       {actionData.name} #{actionData.run_number}
                     </a>
                   </TableCell>
-                  <TableCell align="left">N/A</TableCell>
+                  <TableCell align="left">
+                    <a
+                      href={actionData.actor.html_url}
+                      target={`login-${actionData.actor.login}`}
+                    >
+                      <Avatar src={actionData.actor.avatar_url} />
+                      {actionData.actor.login}
+                    </a>
+                  </TableCell>
                   <TableCell align="left">{actionData.status}</TableCell>
                   <TableCell align="left">{conclusion}</TableCell>
                   <TableCell align="left">

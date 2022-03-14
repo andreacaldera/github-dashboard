@@ -5,11 +5,11 @@ import { getToken } from './get-token'
 
 const dataCache = new cache.Cache()
 
-const CACHE_TIMEOUT = 60 * 1000
+const CACHE_TIMEOUT = 1 * 1000
 
 const NUMBER_OF_COMMITS = 10
 
-const githubApi = async (path: string) => {
+export const githubApi = async (path: string) => {
   const token = getToken()
   const url = `https://api.github.com/${path}`
   const { body } = await superagent
@@ -33,12 +33,10 @@ const getCommits = async (
 const getStatus = async (
   commit: any,
   organisation: string,
-  project: string,
-  action?: string
+  project: string
 ): Promise<any> => {
-  const checkName = action ? `?check_name=${action}` : ''
   const body = await githubApi(
-    `repos/${organisation}/${project}/commits/${commit.sha}/check-runs${checkName}`
+    `repos/${organisation}/${project}/commits/${commit.sha}/check-runs`
   )
   const { check_runs = [], total_count } = body
 
@@ -101,29 +99,30 @@ const cacheResponse = async (
 
 export const getGithubData = async (
   organisation: string,
-  project: string,
-  action?: string
+  project: string
 ): Promise<any> => {
-  const key = `${organisation}/${project}/${action || ''}`
+  const key = `${organisation}/${project}`
   return cacheResponse(key, async () => {
     const commits = await getCommits(organisation, project)
     return Promise.all(
-      commits.map((commit) => getStatus(commit, organisation, project, action))
+      commits.map((commit) => getStatus(commit, organisation, project))
     )
   })
 }
 
 export const getReleaseJobData = async (
   organisation: string,
-  project: string
+  project: string,
+  action: string
 ): Promise<any> => {
   const key = `actions/${organisation}/${project}`
+
   return cacheResponse(key, async () => {
     const body = await githubApi(
-      `repos/${organisation}/${project}/actions/runs`
+      `repos/${organisation}/${project}/actions/runs?exclude_pull_requests=false&branch=main`
     )
 
-    const releases = body.workflow_runs.filter(({ name }) => name === 'Release')
+    const releases = body.workflow_runs.filter(({ name }) => name === action)
     return releases
   })
 }

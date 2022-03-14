@@ -26,6 +26,11 @@ export interface ActionStatus {
   html_url: string
   run_number: string
   head_sha: string
+  actor: {
+    login: string
+    avatar_url: string
+    html_url: string
+  }
 }
 
 export interface ActionsStatus {

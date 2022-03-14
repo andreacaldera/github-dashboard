@@ -9,9 +9,10 @@ export default async (req, res) => {
   }
   const organisation = req.query.organisation as string
   const project = req.query.project as string
+  const action = req.query.action as string
 
   try {
-    const data = await getReleaseJobData(organisation, project)
+    const data = await getReleaseJobData(organisation, project, action)
     res.json(data)
   } catch (error) {
     console.error(error)

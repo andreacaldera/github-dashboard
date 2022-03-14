@@ -22,7 +22,7 @@ import { ProjectStatus } from './project-status'
 import { ProjectSubheader } from './project-subheader'
 import { useCommitData } from './use-commit-data'
 import { useDate, useRelativeDate } from './use-date'
-import { Modal, Button } from '@mui/material'
+import { Modal } from '@mui/material'
 import styled from '@emotion/styled'
 import { StyleButton } from './components/button'
 

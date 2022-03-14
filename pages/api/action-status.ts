@@ -12,7 +12,7 @@ export default async (req, res) => {
   const action = req.query.action as string | undefined
 
   try {
-    const data = await getGithubData(organisation, project, action)
+    const data = await getGithubData(organisation, project)
     res.json(data)
   } catch (error) {
     console.error(error)
