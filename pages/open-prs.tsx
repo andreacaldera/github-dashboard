@@ -11,6 +11,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { PrResponse } from '../src/common/types/pr-response'
+import { useDate, useRelativeDate } from '../src/common/use-date'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -60,7 +61,8 @@ const Home = () => {
             <TableCell align="left">Mergeable</TableCell>
             <TableCell align="left">Auto-merge</TableCell>
             <TableCell align="left">Author</TableCell>
-            <TableCell align="left">Requires review</TableCell>
+            <TableCell align="left">Created</TableCell>
+            <TableCell align="left">Updated</TableCell>
             <TableCell align="left">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -83,9 +85,10 @@ const Home = () => {
 
                 <TableCell align="left">{pr.user.login}</TableCell>
                 <TableCell align="left">
-                  {pr.requested_teams.length
-                    ? pr.requested_teams.map(({ name }) => name).join(', ')
-                    : 'Already reviewed'}
+                  {useRelativeDate(pr.created_at)}
+                </TableCell>
+                <TableCell align="left">
+                  {useRelativeDate(pr.updated_at)}
                 </TableCell>
                 <TableCell align="left">
                   {pr.compareStatus === 'diverged' ? (
