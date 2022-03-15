@@ -109,7 +109,7 @@ export const openPrs = async ({
   const key = `open-prs/${organisation}/${project}`
   return cacheResponse(key, async () => {
     const body = await githubApi(
-      `repos/${organisation}/${project}/pulls?per_page=10`
+      `repos/${organisation}/${project}/pulls?per_page=30`
     )
     return Promise.all(
       body.map(async (pr) => {
@@ -123,7 +123,6 @@ export const openPrs = async ({
           console.error(`Unable to compare branch ${prSha}`)
           return pr
         })
-        console.log('compare', compare.status)
         return { ...pr, prData, compareStatus: compare.status }
       })
     )
