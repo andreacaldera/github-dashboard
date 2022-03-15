@@ -20,6 +20,7 @@ const MenuButton = styled(StyleButton)`
 
 const pages = [
   { label: 'Action Dashboard', link: '/' },
+  { label: 'Open PRs', link: '/open-prs' },
   { label: 'Lighthouse Report', link: '/lighthouse' },
   { label: 'Pairing Schedule', link: '/pairing' },
 ]

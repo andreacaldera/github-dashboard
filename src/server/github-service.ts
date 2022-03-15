@@ -22,6 +22,24 @@ export const githubApi = async (endpoint: string) => {
   return body
 }
 
+const cacheResponse = async (
+  cacheKey: string,
+  loader: () => Promise<any>
+): Promise<any> => {
+  const cachedData = dataCache.get(cacheKey)
+  if (cachedData) {
+    return cachedData
+  }
+  const data = {
+    created: new Date(),
+    data: await loader(),
+  }
+
+  dataCache.put(cacheKey, data, CACHE_TIMEOUT)
+  console.info(`Data added to cache using key ${cacheKey}`)
+  return data
+}
+
 const getCommits = async (
   organisation: string,
   project: string
@@ -81,22 +99,35 @@ const getStatus = async (
   }
 }
 
-const cacheResponse = async (
-  cacheKey: string,
-  loader: () => Promise<any>
-): Promise<any> => {
-  const cachedData = dataCache.get(cacheKey)
-  if (cachedData) {
-    return cachedData
-  }
-  const data = {
-    created: new Date(),
-    data: await loader(),
-  }
-
-  dataCache.put(cacheKey, data, CACHE_TIMEOUT)
-  console.info(`Data added to cache using key ${cacheKey}`)
-  return data
+export const openPrs = async ({
+  organisation,
+  project,
+}: {
+  organisation: string
+  project: string
+}) => {
+  const key = `open-prs/${organisation}/${project}`
+  return cacheResponse(key, async () => {
+    const body = await githubApi(
+      `repos/${organisation}/${project}/pulls?per_page=10`
+    )
+    return Promise.all(
+      body.map(async (pr) => {
+        const prSha = pr.head.ref
+        const prData = await githubApi(
+          `repos/${organisation}/${project}/pulls/${pr.number}`
+        )
+        const compare = await githubApi(
+          `repos/${organisation}/${project}/compare/${prSha}...main`
+        ).catch(() => {
+          console.error(`Unable to compare branch ${prSha}`)
+          return pr
+        })
+        console.log('compare', compare.status)
+        return { ...pr, prData, compareStatus: compare.status }
+      })
+    )
+  })
 }
 
 export const getGithubData = async (

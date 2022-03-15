@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
+import { getToken } from '../../src/server/get-token'
 import { githubApi } from '../../src/server/github-service'
+import superagent from 'superagent'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const organisation = 'DigitalInnovation'
@@ -11,14 +13,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(401).end()
   }
   try {
-    const body = await githubApi(
-      `repos/${organisation}/${project}/actions/runs?exclude_pull_requests=true&branch=main`
-    )
+    const token = getToken()
+    const body = await githubApi(`repos/${organisation}/${project}/pulls`)
 
-    const releases = body.workflow_runs.filter(
-      ({ name, head_branch }) => head_branch === 'main' && name === 'Release'
-    )
-    res.send(releases)
+    await superagent
+      .post('https://api.github.com/repos/andreacaldera/eastendcc-www/merges')
+      .set('Accept', 'application/vnd.github.v3+json')
+      .set('User-Agent', ' curl/7.64.1')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ base: 'test-update-pr', head: 'main' })
+
+    const openPrs = body
+    res.send(openPrs)
   } catch (error) {
     console.error(error)
     res.status(500).send(error.message)
