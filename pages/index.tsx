@@ -26,7 +26,7 @@ const Home = () => {
         action="Release"
         nxApp="jaeger"
       />
-      {/* <ActionDashboard
+      <ActionDashboard
         organisation="DigitalInnovation"
         project="jaeger-release"
         action="Release"
@@ -42,9 +42,9 @@ const Home = () => {
         organisation="DigitalInnovation"
         project="browse-release"
         action="Release"
-      /> */}
+      />
 
-      <p>Broken :(</p>
+      {/* <p>Broken :(</p> */}
       {/* <ProjectDashboard organisation="DigitalInnovation" project="onyx-nx" /> */}
     </>
   )
