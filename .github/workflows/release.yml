@@ -1,4 +1,4 @@
-name: github-dashboard production deploy
+name: Production deploy
 
 on:
   push:
