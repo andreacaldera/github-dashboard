@@ -16,7 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const response = await openPrs({ organisation, project })
     res.send(response)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     res.status(500).send(error.message)
   }

@@ -65,7 +65,7 @@ export const ProjectCard = ({ title, children, lastUpdated }: Props) => {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Typography color="textSecondary" component="p">
-            Last update: N/A
+            Last update: {useRelativeDate(lastUpdated)}
           </Typography>
           <Typography color="textSecondary" component="p">
             Average execution time: N/A

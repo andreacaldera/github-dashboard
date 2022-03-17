@@ -36,6 +36,24 @@ export interface ActionStatus {
   }
   created_at: string
   updated_at: string
+  jobs: {
+    total_count: number
+    jobs: ReadonlyArray<{
+      id: number
+      status: string
+      conclusion: string
+      started_at: string
+      completed_at: string
+      name: string
+      steps: ReadonlyArray<{
+        name: string
+        status: string
+        conclusion: string
+        started_at: string
+        updated_at: string
+      }>
+    }>
+  }
 }
 
 export interface ActionsStatus {

@@ -25,7 +25,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const openPrs = body
     res.send(openPrs)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     res.status(500).send(error.message)
   }

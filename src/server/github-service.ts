@@ -58,9 +58,9 @@ const getStatus = async (
   const body = await githubApi(
     `repos/${organisation}/${project}/commits/${commit.sha}/check-runs`
   )
-  const { check_runs = [], total_count } = body
+  const { check_runs = [], total_count } = body as any
 
-  const jobSummary = body.check_runs.map(({ name, conclusion }) => ({
+  const jobSummary = body.check_runs.map(({ name, conclusion }: any) => ({
     name,
     conclusion,
   }))
@@ -73,18 +73,21 @@ const getStatus = async (
     name: commit.commit.author.name,
   }
 
-  const conclusion = body.check_runs.reduce((result, { conclusion }) => {
-    if (conclusion === 'skipped') {
-      return result || conclusion
-    }
-    if (conclusion === 'success' && (result === 'success' || !result)) {
-      return conclusion
-    }
-    if (conclusion === 'failure') {
-      return conclusion
-    }
-    return result
-  }, '')
+  const conclusion = body.check_runs.reduce(
+    (result: any, { conclusion }: any) => {
+      if (conclusion === 'skipped') {
+        return result || conclusion
+      }
+      if (conclusion === 'success' && (result === 'success' || !result)) {
+        return conclusion
+      }
+      if (conclusion === 'failure') {
+        return conclusion
+      }
+      return result
+    },
+    ''
+  )
 
   return {
     status: check_runs[0]?.status,
@@ -112,7 +115,7 @@ export const openPrs = async ({
       `repos/${organisation}/${project}/pulls?per_page=30`
     )
     return Promise.all(
-      body.map(async (pr) => {
+      body.map(async (pr: any) => {
         const prSha = pr.head.ref
         const prData = await githubApi(
           `repos/${organisation}/${project}/pulls/${pr.number}`
@@ -151,19 +154,21 @@ export const getReleaseJobData = async (
   const key = `actions/${organisation}/${project}/${nxApp || '_no_app'}`
 
   return cacheResponse(key, async () => {
-    const body = await githubApi(
+    const body = (await githubApi(
       `repos/${organisation}/${project}/actions/runs?&exclude_pull_requests=false&branch=main`
-    )
+    )) as any
 
-    const releases = body.workflow_runs.filter(({ name }) => name === action)
+    const releases = body.workflow_runs.filter(
+      ({ name }: any) => name === action
+    )
     const withJobs = await Promise.all(
-      releases.map(async (r) => {
+      releases.map(async (r: any) => {
         const jobs = await githubApi(r.jobs_url)
         return { ...r, jobs }
       })
     )
     return withJobs.filter(({ jobs }) => {
-      return !nxApp || jobs.jobs.some(({ name }) => name.includes(nxApp))
+      return !nxApp || jobs.jobs.some(({ name }: any) => name.includes(nxApp))
     })
   })
 }

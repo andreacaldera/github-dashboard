@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ActionsStatus } from './project-status'
 
-import { TableHead, TableRow } from '@mui/material'
+import { Modal, TableHead, TableRow } from '@mui/material'
 
 import { ProjectCard } from './components/project-card'
 import Table from '@material-ui/core/Table'
@@ -9,7 +9,10 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import { StatusRow } from './components/status-row'
 import styled from '@emotion/styled'
-import { useDate, useDateDifference } from './use-date'
+import { useDate, useDateDifference, useElapsedTime } from './use-date'
+import { StyleButton } from './components/button'
+import { getJobStats } from '../common/job-stats'
+import { JobStats } from './components/job-stats'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -34,6 +37,13 @@ const CommitMessage = styled(TableCell)`
   overflow: hidden;
 `
 
+const StyledModal = styled(Modal)`
+  background: white;
+  margin: auto;
+  width: 40vw;
+  height: 20vw;
+`
+
 export const ActionDashboard: React.FunctionComponent<Props> = ({
   organisation,
   project,
@@ -41,6 +51,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
   nxApp,
 }) => {
   const [actionsData, setActionsData] = useState<ActionsStatus>()
+  const [jobs, setJobs] = useState<ActionsStatus['data'][0]['jobs']>()
 
   const fetchFromApi = async () => {
     const data = await fetch(
@@ -66,6 +77,20 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
 
   return (
     <div>
+      <StyledModal open={!!jobs}>
+        <>
+          <StyleButton onClick={() => setJobs(undefined)}>Close</StyleButton>
+          <ul>
+            {jobs?.jobs.map(({ name, completed_at, started_at }) => {
+              return (
+                <li>
+                  {name}: {useElapsedTime({ completed_at, started_at })} min(s)
+                </li>
+              )
+            })}
+          </ul>
+        </>
+      </StyledModal>
       <ProjectCard
         lastUpdated={actionsData?.created}
         title={
@@ -79,73 +104,84 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
           </div>
         }
       >
-        <Table aria-label="Project actions">
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Commit</TableCell>
-              <TableCell align="left">Run</TableCell>
-              <TableCell align="left">Author</TableCell>
-              <TableCell align="left">Status</TableCell>
-              <TableCell align="left">Conclusion</TableCell>
-              <TableCell align="left">Started at</TableCell>
-              <TableCell align="left">Completed at</TableCell>
-              <TableCell align="left">Duration</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {actionsData?.data.map((actionData, i) => {
-              const { conclusion, status } = actionData
-              return (
-                <StatusRow
-                  conclusion={conclusion}
-                  runningStatus={status}
-                  key={actionData.head_sha}
-                >
-                  <CommitMessage align="left">
-                    <a
-                      href={`https://github.com/${organisation}/${project}/commit/${actionData.head_sha}`}
-                      target={`commit-url-${actionData.head_commit.message}`}
-                    >
-                      {actionData.head_commit.message}
-                    </a>
-                  </CommitMessage>
-                  <TableCell align="left">
-                    <a
-                      href={actionData.html_url}
-                      target={`run-url-${actionData.html_url}`}
-                    >
-                      {actionData.run_number}
-                    </a>
-                  </TableCell>
-                  <TableCell align="left">
-                    <a
-                      href={actionData.actor.html_url}
-                      target={`login-${actionData.actor.login}`}
-                    >
-                      <Avatar src={actionData.actor.avatar_url} />
-                      {actionData.actor.login}
-                    </a>
-                  </TableCell>
-                  <TableCell align="left">{actionData.status}</TableCell>
-                  <TableCell align="left">{conclusion}</TableCell>
-                  <TableCell align="left">
-                    {useDate(actionData.created_at)}
-                  </TableCell>
-                  <TableCell align="left">
-                    {useDate(actionData.updated_at)}
-                  </TableCell>
-                  <TableCell align="left">
-                    {useDateDifference(
-                      actionData.created_at,
-                      actionData.updated_at
-                    )}{' '}
-                    minutes
-                  </TableCell>
-                </StatusRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+        <>
+          <div>
+            {actionsData?.data && <JobStats actionStatus={actionsData.data} />}
+          </div>
+          <Table aria-label="Project actions">
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">Commit</TableCell>
+                <TableCell align="left">Action</TableCell>
+                <TableCell align="left">Run</TableCell>
+                <TableCell align="left">Author</TableCell>
+                <TableCell align="left">Status</TableCell>
+                <TableCell align="left">Conclusion</TableCell>
+                <TableCell align="left">Started at</TableCell>
+                <TableCell align="left">Completed at</TableCell>
+                <TableCell align="left">Duration</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {actionsData?.data.map((actionData, i) => {
+                const { conclusion, status } = actionData
+                return (
+                  <StatusRow
+                    conclusion={conclusion}
+                    runningStatus={status}
+                    key={actionData.head_sha}
+                  >
+                    <CommitMessage align="left">
+                      <a
+                        href={`https://github.com/${organisation}/${project}/commit/${actionData.head_sha}`}
+                        target={`commit-url-${actionData.head_commit.message}`}
+                      >
+                        {actionData.head_commit.message}
+                      </a>
+                    </CommitMessage>
+                    <TableCell align="left">
+                      <StyleButton onClick={() => setJobs(actionData.jobs)}>
+                        Jobs
+                      </StyleButton>
+                    </TableCell>
+                    <TableCell align="left">
+                      <a
+                        href={actionData.html_url}
+                        target={`run-url-${actionData.html_url}`}
+                      >
+                        {actionData.run_number}
+                      </a>
+                    </TableCell>
+                    <TableCell align="left">
+                      <a
+                        href={actionData.actor.html_url}
+                        target={`login-${actionData.actor.login}`}
+                      >
+                        <Avatar src={actionData.actor.avatar_url} />
+                        {actionData.actor.login}
+                      </a>
+                    </TableCell>
+                    <TableCell align="left">{actionData.status}</TableCell>
+                    <TableCell align="left">{conclusion}</TableCell>
+                    <TableCell align="left">
+                      {useDate(actionData.created_at)}
+                    </TableCell>
+                    <TableCell align="left">
+                      {useDate(actionData.updated_at)}
+                    </TableCell>
+                    <TableCell align="left">
+                      {useDateDifference(
+                        actionData.created_at,
+                        actionData.updated_at
+                      )}{' '}
+                      minutes
+                    </TableCell>
+                  </StatusRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </>
       </ProjectCard>
     </div>
   )

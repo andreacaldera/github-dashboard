@@ -123,8 +123,8 @@ export const getLighthouseScores = async (
     .set('Authorization', `Bearer ${token}`)
 
   const prData = body
-    .filter(({ merged_at }) => merged_at)
-    .map(({ number, title, url, merged_at }) => ({
+    .filter(({ merged_at }: any) => merged_at)
+    .map(({ number, title, url, merged_at }: any) => ({
       number,
       title,
       url,
@@ -132,12 +132,14 @@ export const getLighthouseScores = async (
     }))
 
   const results: LighthouseScore[] = await Promise.all(
-    prData.map((data) => getLighthouseScore(token, organisation, project, data))
+    prData.map((data: any) =>
+      getLighthouseScore(token, organisation, project, data)
+    )
   )
 
   return results
     .filter(truthy)
-    .sort((a, b) => (a.mergedAt > b.mergedAt ? -1 : 1))
+    .sort((a: any, b: any) => (a.mergedAt > b.mergedAt ? -1 : 1))
 }
 
 export const getLighthouseData = async (

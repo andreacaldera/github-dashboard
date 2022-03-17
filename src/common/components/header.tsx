@@ -33,7 +33,7 @@ export const Header = () => {
 
   const [anchorElNav, setAnchorElNav] = React.useState(null)
 
-  const handleOpenNavMenu = (event) => {
+  const handleOpenNavMenu = (event: any) => {
     setAnchorElNav(event.currentTarget)
   }
 

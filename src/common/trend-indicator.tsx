@@ -4,7 +4,7 @@ import { HorizontalRule } from '@mui/icons-material'
 
 export const TrendIndicator: FC<{
   score: number
-  previousScore: number
+  previousScore?: number
 }> = ({ score, previousScore }) => {
   const style = {
     marginRight: '0.5rem',

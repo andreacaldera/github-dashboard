@@ -1,7 +1,8 @@
+import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from 'next-auth/react'
 import { getLighthouseData } from '../../src/server/lighthouse-service'
 
-export default async (req, res) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req })
 
   if (!session) {
@@ -13,7 +14,7 @@ export default async (req, res) => {
   try {
     const data = await getLighthouseData(organisation, project)
     res.json(data)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     res.status(500).send(error.message)
   }

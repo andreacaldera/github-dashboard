@@ -1,3 +1,3 @@
 export const getToken = (): string => {
-  return process.env.GITHUB_TOKEN
+  return process.env.GITHUB_TOKEN!
 }
