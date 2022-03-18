@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { ActionsStatus } from './project-status'
 
-import { Modal, TableHead, TableRow } from '@mui/material'
+import {
+  Modal,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Table,
+} from '@mui/material'
 
 import { ProjectCard } from './components/project-card'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
+
 import { StatusRow } from './components/status-row'
 import styled from '@emotion/styled'
 import { useDate, useDateDifference, useElapsedTime } from './use-date'
 import { StyleButton } from './components/button'
-import { getJobStats } from '../common/job-stats'
 import { JobStats } from './components/job-stats'
 
 const DATA_FETCH_INTERVAL = 60 * 1000

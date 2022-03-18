@@ -112,7 +112,7 @@ export const openPrs = async ({
   const key = `open-prs/${organisation}/${project}`
   return cacheResponse(key, async () => {
     const body = await githubApi(
-      `repos/${organisation}/${project}/pulls?per_page=30`
+      `repos/${organisation}/${project}/pulls?per_page=10`
     )
     return Promise.all(
       body.map(async (pr: any) => {

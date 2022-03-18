@@ -1,4 +1,4 @@
-import { TableCell } from '@material-ui/core'
+import { TableCell } from '@mui/material'
 import { Scores } from './lighthouse-type'
 import { TrendIndicator } from './trend-indicator'
 

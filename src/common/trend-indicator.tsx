@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { ArrowUpward, ArrowDownward } from '@material-ui/icons'
+import { ArrowUpward, ArrowDownward } from '@mui/icons-material'
 import { HorizontalRule } from '@mui/icons-material'
 
 export const TrendIndicator: FC<{

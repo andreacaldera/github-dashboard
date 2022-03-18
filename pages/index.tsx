@@ -1,5 +1,3 @@
-import { ProjectDashboard } from '../src/common/project-dashboard'
-
 import { Typography } from '@mui/material'
 import { ActionDashboard } from '../src/common/action-dashboard'
 import { useSession } from 'next-auth/react'
@@ -43,9 +41,6 @@ const Home = () => {
         project="browse-release"
         action="Release"
       />
-
-      {/* <p>Broken :(</p> */}
-      {/* <ProjectDashboard organisation="DigitalInnovation" project="onyx-nx" /> */}
     </>
   )
 }

@@ -2,19 +2,18 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Collapse,
   IconButton,
-  makeStyles,
-} from '@material-ui/core'
-import Collapse from '@material-ui/core/Collapse'
-import Paper from '@material-ui/core/Paper'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import clsx from 'clsx'
+  Table,
+  Paper,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material'
+
+import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import React, { useEffect, useState } from 'react'
 import { LighthouseScore } from './lighthouse-score'
 import { LighthouseResponse } from './lighthouse-type'
@@ -22,26 +21,6 @@ import { LighthouseResponse } from './lighthouse-type'
 import { useDate } from './use-date'
 
 const DATA_FETCH_INTERVAL = 5 * 1000
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    marginTop: theme.spacing(2),
-  },
-  media: {
-    height: 0,
-    paddingTop: '56.25%',
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  },
-}))
 
 interface Props {
   organisation: string
@@ -58,7 +37,6 @@ export const LighthouseDashboard: React.FunctionComponent<Props> = ({
   >([])
 
   const [expanded, setExpanded] = useState(true)
-  const classes = useStyles()
 
   const fetchFromApi = async () => {
     const data = await fetch(
@@ -79,20 +57,21 @@ export const LighthouseDashboard: React.FunctionComponent<Props> = ({
     }
   }, [])
 
+  if (!lighthouseData.length) {
+    return <p>Loading...</p>
+  }
+
   return (
-    <div className={classes.container}>
+    <div>
       <Card>
         <CardHeader
           action={
             <IconButton
-              className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded,
-              })}
               onClick={() => setExpanded(!expanded)}
               aria-expanded={expanded}
               aria-label="show more"
             >
-              <ExpandMoreIcon />
+              {expanded ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           }
           title={
