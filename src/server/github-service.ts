@@ -32,7 +32,9 @@ const cacheResponse = async (
     data: await loader(),
   }
 
-  await writeFileSync(filename, JSON.stringify(data, null, 2))
+  if (process.env.USE_FILES) {
+    await writeFileSync(filename, JSON.stringify(data, null, 2))
+  }
   dataCache.put(cacheKey, data, CACHE_TIMEOUT)
   console.info(`Data added to cache using key ${cacheKey}`)
   return data
