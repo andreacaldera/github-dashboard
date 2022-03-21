@@ -36,5 +36,5 @@ yarn-error.log*
 
 .env
 
-github-responses/*.json
+github-responses/*
 

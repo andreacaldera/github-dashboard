@@ -15,8 +15,8 @@ const cacheResponse = async (
   cacheKey: string,
   loader: () => Promise<any>
 ): Promise<any> => {
-  const filename = `${process.cwd()}/github-responses/${cacheKey.replaceAll(
-    '/',
+  const filename = `${process.cwd()}/github-responses/${cacheKey.replace(
+    /\//g,
     '-'
   )}`
   if (process.env.USE_FILES) {
