@@ -2,7 +2,6 @@ import cache from 'memory-cache'
 import superagent from 'superagent'
 
 import { getToken } from './get-token'
-import { logger } from './logger'
 import { writeFileSync, readFileSync } from 'fs'
 
 const dataCache = new cache.Cache()
@@ -20,12 +19,12 @@ const cacheResponse = async (
     '-'
   )}`
   if (process.env.USE_FILES) {
-    logger.warn(`Returning content from file instead of hitting Github API`)
+    console.warn(`Returning content from file instead of hitting Github API`)
     return readFileSync(filename)
   }
   const cachedData = dataCache.get(cacheKey)
   if (cachedData) {
-    logger.debug(`Using cache for key ${cacheKey}`)
+    console.debug(`Using cache for key ${cacheKey}`)
     return cachedData
   }
   const data = {
@@ -35,7 +34,7 @@ const cacheResponse = async (
 
   await writeFileSync(filename, JSON.stringify(data, null, 2))
   dataCache.put(cacheKey, data, CACHE_TIMEOUT)
-  logger.info(`Data added to cache using key ${cacheKey}`)
+  console.info(`Data added to cache using key ${cacheKey}`)
   return data
 }
 
@@ -137,7 +136,7 @@ export const openPrs = async ({
         const compare = await githubApi(
           `repos/${organisation}/${project}/compare/${prSha}...main`
         ).catch(() => {
-          logger.warn(`Unable to compare branch ${prSha}`)
+          console.warn(`Unable to compare branch ${prSha}`)
           return pr
         })
         return { ...pr, prData, compareStatus: compare.status }
