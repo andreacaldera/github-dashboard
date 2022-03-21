@@ -12,11 +12,11 @@ import {
 
 import { ProjectCard } from './components/project-card'
 
-import { StatusRow } from './components/status-row'
 import styled from '@emotion/styled'
 import { useDate, useDateDifference, useElapsedTime } from './use-date'
 import { StyleButton } from './components/button'
 import { JobStats } from './components/job-stats'
+import { Status } from './components/status'
 
 const DATA_FETCH_INTERVAL = 60 * 1000
 
@@ -115,6 +115,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
           <Table aria-label="Project actions">
             <TableHead>
               <TableRow>
+                <TableCell align="left">Status</TableCell>
                 <TableCell align="left">Commit</TableCell>
                 <TableCell align="left">Action</TableCell>
                 <TableCell align="left">Run</TableCell>
@@ -130,11 +131,10 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
               {actionsData?.data.map((actionData, i) => {
                 const { conclusion, status } = actionData
                 return (
-                  <StatusRow
-                    conclusion={conclusion}
-                    runningStatus={status}
-                    key={actionData.head_sha}
-                  >
+                  <TableRow key={actionData.head_sha}>
+                    <TableCell align="left">
+                      <Status conclusion={actionData.conclusion} />
+                    </TableCell>
                     <CommitMessage align="left">
                       <a
                         href={`https://github.com/${organisation}/${project}/commit/${actionData.head_sha}`}
@@ -180,7 +180,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                       )}{' '}
                       minutes
                     </TableCell>
-                  </StatusRow>
+                  </TableRow>
                 )
               })}
             </TableBody>

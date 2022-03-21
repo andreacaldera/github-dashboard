@@ -2,6 +2,8 @@ import cache from 'memory-cache'
 import superagent from 'superagent'
 
 import { getToken } from './get-token'
+import { logger } from './logger'
+import { writeFileSync, readFileSync } from 'fs'
 
 const dataCache = new cache.Cache()
 
@@ -9,25 +11,21 @@ const CACHE_TIMEOUT = 60 * 1000
 
 const NUMBER_OF_COMMITS = 10
 
-export const githubApi = async (endpoint: string) => {
-  const token = getToken()
-  const url = endpoint.startsWith('http')
-    ? endpoint
-    : `https://api.github.com/${endpoint}`
-  const { body } = await superagent
-    .get(url)
-    .set('Accept', 'application/vnd.github.v3+json')
-    .set('User-Agent', ' curl/7.64.1')
-    .set('Authorization', `Bearer ${token}`)
-  return body
-}
-
 const cacheResponse = async (
   cacheKey: string,
   loader: () => Promise<any>
 ): Promise<any> => {
+  const filename = `${process.cwd()}/github-responses/${cacheKey.replaceAll(
+    '/',
+    '-'
+  )}`
+  if (process.env.USE_FILES) {
+    logger.warn(`Returning content from file instead of hitting Github API`)
+    return readFileSync(filename)
+  }
   const cachedData = dataCache.get(cacheKey)
   if (cachedData) {
+    logger.debug(`Using cache for key ${cacheKey}`)
     return cachedData
   }
   const data = {
@@ -35,9 +33,25 @@ const cacheResponse = async (
     data: await loader(),
   }
 
+  await writeFileSync(filename, JSON.stringify(data, null, 2))
   dataCache.put(cacheKey, data, CACHE_TIMEOUT)
-  console.info(`Data added to cache using key ${cacheKey}`)
+  logger.info(`Data added to cache using key ${cacheKey}`)
   return data
+}
+
+export const githubApi = async (endpoint: string) => {
+  return cacheResponse(endpoint, async () => {
+    const token = getToken()
+    const url = endpoint.startsWith('http')
+      ? endpoint
+      : `https://api.github.com/${endpoint}`
+    const { body } = await superagent
+      .get(url)
+      .set('Accept', 'application/vnd.github.v3+json')
+      .set('User-Agent', ' curl/7.64.1')
+      .set('Authorization', `Bearer ${token}`)
+    return body
+  })
 }
 
 const getCommits = async (
@@ -123,7 +137,7 @@ export const openPrs = async ({
         const compare = await githubApi(
           `repos/${organisation}/${project}/compare/${prSha}...main`
         ).catch(() => {
-          console.error(`Unable to compare branch ${prSha}`)
+          logger.warn(`Unable to compare branch ${prSha}`)
           return pr
         })
         return { ...pr, prData, compareStatus: compare.status }
@@ -154,17 +168,17 @@ export const getReleaseJobData = async (
   const key = `actions/${organisation}/${project}/${nxApp || '_no_app'}`
 
   return cacheResponse(key, async () => {
-    const body = (await githubApi(
+    const { data } = (await githubApi(
       `repos/${organisation}/${project}/actions/runs?&exclude_pull_requests=false&branch=main`
     )) as any
 
-    const releases = body.workflow_runs.filter(
+    const releases = data.workflow_runs.filter(
       ({ name }: any) => name === action
     )
     const withJobs = await Promise.all(
       releases.map(async (r: any) => {
-        const jobs = await githubApi(r.jobs_url)
-        return { ...r, jobs }
+        const { data } = await githubApi(r.jobs_url)
+        return { ...r, jobs: data }
       })
     )
     return withJobs.filter(({ jobs }) => {

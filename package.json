@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "USE_FILES=true next dev -p 3000",
     "build": "next build",
     "start": "next start",
     "prepare": "husky install",
     "format": "prettier src --write"
   },
   "lint-staged": {
-    "**/*.{js,ts,json,json5,md}": [
-      "npm run format"
+    "**/*.{ts,tsx,json,json,md}": [
+      "yarn format"
     ]
   },
   "dependencies": {
@@ -25,9 +25,8 @@
     "next-auth": "^4.2.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-redux": "^7.2.4",
-    "redux": "^4.1.0",
-    "superagent": "^6.1.0"
+    "superagent": "^6.1.0",
+    "winston": "^3.6.0"
   },
   "devDependencies": {
     "@types/memory-cache": "^0.2.2",
