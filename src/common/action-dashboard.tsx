@@ -43,9 +43,7 @@ const CommitMessage = styled(TableCell)`
 
 const StyledModal = styled(Modal)`
   background: white;
-  margin: auto;
-  width: 40vw;
-  height: 20vw;
+  padding: 5rem 10vw 10vw;
 `
 
 export const ActionDashboard: React.FunctionComponent<Props> = ({

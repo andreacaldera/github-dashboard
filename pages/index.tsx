@@ -9,14 +9,17 @@ const Home = () => {
   }
   return (
     <>
-      <Typography variant="h3" component="h3">
-        Github Dashboard
-      </Typography>
       {/* <ProjectDashboard
                 organisation="andreacaldera"
                 project="eastendcc-www"
               /> */}
-
+      <Typography variant="h3">Core components</Typography>
+      <ActionDashboard
+        organisation="DigitalInnovation"
+        project="onyx-nx"
+        action="Release"
+        nxApp="core-components"
+      />
       <Typography variant="h3">Jaeger</Typography>
       <ActionDashboard
         organisation="DigitalInnovation"
@@ -24,7 +27,7 @@ const Home = () => {
         action="Release"
         nxApp="jaeger"
       />
-      {/* <ActionDashboard
+      <ActionDashboard
         organisation="DigitalInnovation"
         project="jaeger-release"
         action="Release"
@@ -40,7 +43,7 @@ const Home = () => {
         organisation="DigitalInnovation"
         project="browse-release"
         action="Release"
-      /> */}
+      />
     </>
   )
 }
