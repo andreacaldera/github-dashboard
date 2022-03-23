@@ -1,6 +1,11 @@
 import { Typography } from '@mui/material'
 import { ActionDashboard } from '../src/common/action-dashboard'
 import { useSession } from 'next-auth/react'
+import styled from '@emotion/styled'
+
+const Title = styled(Typography)`
+  margin-top: 3rem;
+`
 
 const Home = () => {
   const { data: session } = useSession()
@@ -9,18 +14,14 @@ const Home = () => {
   }
   return (
     <>
-      {/* <ProjectDashboard
-                organisation="andreacaldera"
-                project="eastendcc-www"
-              /> */}
-      <Typography variant="h3">Core components</Typography>
+      <Title variant="h3">Core components</Title>
       <ActionDashboard
         organisation="DigitalInnovation"
         project="onyx-nx"
         action="Release"
         nxApp="core-components"
       />
-      <Typography variant="h3">Jaeger</Typography>
+      <Title variant="h3">Jaeger</Title>
       <ActionDashboard
         organisation="DigitalInnovation"
         project="onyx-nx"
@@ -32,7 +33,7 @@ const Home = () => {
         project="jaeger-release"
         action="Release"
       />
-      <Typography variant="h3">Browse</Typography>
+      <Title variant="h3">Browse</Title>
       <ActionDashboard
         organisation="DigitalInnovation"
         project="onyx-nx"
@@ -42,6 +43,18 @@ const Home = () => {
       <ActionDashboard
         organisation="DigitalInnovation"
         project="browse-release"
+        action="Release"
+      />
+      <Title variant="h3">Banking service</Title>
+      <ActionDashboard
+        organisation="DigitalInnovation"
+        project="onyx-nx"
+        action="Release"
+        nxApp="banksrv"
+      />
+      <ActionDashboard
+        organisation="DigitalInnovation"
+        project="bankingserviceshub-release"
         action="Release"
       />
     </>

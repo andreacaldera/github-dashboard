@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { ActionsStatus } from './project-status'
 
 import {
   Modal,
@@ -17,8 +16,8 @@ import { useDate, useDateDifference, useElapsedTime } from './use-date'
 import { StyleButton } from './components/button'
 import { JobStats } from './components/job-stats'
 import { Status } from './components/status'
-
-const DATA_FETCH_INTERVAL = 60 * 1000
+import { useActionDashboardApi } from './use-action-dashboard-api'
+import { useActionRunTimes } from './use-action-run-times'
 
 interface Props {
   organisation: string
@@ -41,9 +40,10 @@ const CommitMessage = styled(TableCell)`
   overflow: hidden;
 `
 
-const StyledModal = styled(Modal)`
-  background: white;
-  padding: 5rem 10vw 10vw;
+const List = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 `
 
 export const ActionDashboard: React.FunctionComponent<Props> = ({
@@ -52,47 +52,17 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
   action,
   nxApp,
 }) => {
-  const [actionsData, setActionsData] = useState<ActionsStatus>()
-  const [jobs, setJobs] = useState<ActionsStatus['data'][0]['jobs']>()
+  const actionsData = useActionDashboardApi({
+    organisation,
+    project,
+    action,
+    nxApp,
+  })
 
-  const fetchFromApi = async () => {
-    const data = await fetch(
-      `/api/action-summary?organisation=${organisation}&project=${project}&action=${action}${
-        nxApp ? `&nxApp=${nxApp}` : ''
-      }`
-    )
-    console.log('status', data.status)
-    if (data.status >= 400) {
-      console.error('Unable to retrieve data')
-    }
-    const body = await data.json()
-    setActionsData(body)
-  }
-
-  useEffect(() => {
-    void fetchFromApi()
-    const dataFetch = setInterval(fetchFromApi, DATA_FETCH_INTERVAL)
-    return () => {
-      clearTimeout(dataFetch)
-    }
-  }, [])
+  const [expandedJob, setExpandedJob] = useState<number[]>([]) // todo rename
 
   return (
     <div>
-      <StyledModal open={!!jobs}>
-        <>
-          <StyleButton onClick={() => setJobs(undefined)}>Close</StyleButton>
-          <ul>
-            {jobs?.jobs.map(({ name, completed_at, started_at }) => {
-              return (
-                <li>
-                  {name}: {useElapsedTime({ completed_at, started_at })} min(s)
-                </li>
-              )
-            })}
-          </ul>
-        </>
-      </StyledModal>
       <ProjectCard
         lastUpdated={actionsData?.created}
         title={
@@ -127,7 +97,8 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
             </TableHead>
             <TableBody>
               {actionsData?.data.map((actionData, i) => {
-                const { conclusion, status } = actionData
+                const { conclusion } = actionData
+                const actionRunTimes = useActionRunTimes(actionData.jobs.jobs)
                 return (
                   <TableRow key={actionData.head_sha}>
                     <TableCell align="left">
@@ -140,10 +111,50 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                       >
                         {actionData.head_commit.message}
                       </a>
+                      {expandedJob.some((ind) => ind === i) && (
+                        <List>
+                          {actionData?.jobs?.jobs.map(
+                            ({
+                              name,
+                              conclusion,
+                              completed_at,
+                              started_at,
+                            }) => {
+                              const elapsedTime = useElapsedTime({
+                                completed_at,
+                                started_at,
+                              })
+
+                              return elapsedTime > 0 ? (
+                                <li>
+                                  <span style={{ display: 'inline-block' }}>
+                                    <Status conclusion={conclusion} />
+                                  </span>
+                                  <span>
+                                    {name}: {elapsedTime} min(s)
+                                  </span>
+                                </li>
+                              ) : null
+                            }
+                          )}
+                        </List>
+                      )}
                     </CommitMessage>
                     <TableCell align="left">
-                      <StyleButton onClick={() => setJobs(actionData.jobs)}>
-                        Jobs
+                      <StyleButton
+                        onClick={() => {
+                          if (expandedJob.some((ind) => ind === i)) {
+                            setExpandedJob(
+                              expandedJob.filter((ind) => ind !== i)
+                            )
+                          } else {
+                            setExpandedJob([...expandedJob, i])
+                          }
+                        }}
+                      >
+                        {expandedJob.some((ind) => ind === i)
+                          ? 'Show less jobs data'
+                          : 'Show more jobs data'}
                       </StyleButton>
                     </TableCell>
                     <TableCell align="left">
@@ -166,17 +177,13 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                     <TableCell align="left">{actionData.status}</TableCell>
                     <TableCell align="left">{conclusion}</TableCell>
                     <TableCell align="left">
-                      {useDate(actionData.created_at)}
+                      {useDate(actionRunTimes.startDate)}
                     </TableCell>
                     <TableCell align="left">
-                      {useDate(actionData.updated_at)}
+                      {useDate(actionRunTimes.completedDate)}
                     </TableCell>
                     <TableCell align="left">
-                      {useDateDifference(
-                        actionData.created_at,
-                        actionData.updated_at
-                      )}{' '}
-                      minutes
+                      {actionRunTimes.elapsedTime} minutes
                     </TableCell>
                   </TableRow>
                 )
