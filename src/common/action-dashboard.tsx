@@ -59,7 +59,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
     nxApp,
   })
 
-  const [expandedJob, setExpandedJob] = useState<number[]>([]) // todo rename
+  const [expandedJobIndexes, setExpandedJobIndexes] = useState<number[]>([])
 
   return (
     <div>
@@ -71,6 +71,9 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
               href={`https://github.com/${organisation}/${project}/actions/workflows/${action}.yml`}
               target={`https://github.com/${organisation}/${project}/actions/workflows/${action}.yml`}
             >
+              <span style={{ display: 'inline-block' }}>
+                <Status conclusion={actionsData?.data[0].conclusion} />
+              </span>{' '}
               {organisation} / {project} / {action} {nxApp && ` / ${nxApp}`}
             </a>
           </div>
@@ -89,7 +92,6 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                 <TableCell align="left">Run</TableCell>
                 <TableCell align="left">Author</TableCell>
                 <TableCell align="left">Status</TableCell>
-                <TableCell align="left">Conclusion</TableCell>
                 <TableCell align="left">Started at</TableCell>
                 <TableCell align="left">Completed at</TableCell>
                 <TableCell align="left">Duration</TableCell>
@@ -97,7 +99,6 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
             </TableHead>
             <TableBody>
               {actionsData?.data.map((actionData, i) => {
-                const { conclusion } = actionData
                 const actionRunTimes = useActionRunTimes(actionData.jobs.jobs)
                 return (
                   <TableRow key={actionData.head_sha}>
@@ -111,7 +112,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                       >
                         {actionData.head_commit.message}
                       </a>
-                      {expandedJob.some((ind) => ind === i) && (
+                      {expandedJobIndexes.some((ind) => ind === i) && (
                         <List>
                           {actionData?.jobs?.jobs.map(
                             ({
@@ -143,16 +144,16 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                     <TableCell align="left">
                       <StyleButton
                         onClick={() => {
-                          if (expandedJob.some((ind) => ind === i)) {
-                            setExpandedJob(
-                              expandedJob.filter((ind) => ind !== i)
+                          if (expandedJobIndexes.some((ind) => ind === i)) {
+                            setExpandedJobIndexes(
+                              expandedJobIndexes.filter((ind) => ind !== i)
                             )
                           } else {
-                            setExpandedJob([...expandedJob, i])
+                            setExpandedJobIndexes([...expandedJobIndexes, i])
                           }
                         }}
                       >
-                        {expandedJob.some((ind) => ind === i)
+                        {expandedJobIndexes.some((ind) => ind === i)
                           ? 'Show less jobs data'
                           : 'Show more jobs data'}
                       </StyleButton>
@@ -175,7 +176,6 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                       </a>
                     </TableCell>
                     <TableCell align="left">{actionData.status}</TableCell>
-                    <TableCell align="left">{conclusion}</TableCell>
                     <TableCell align="left">
                       {useDate(actionRunTimes.startDate)}
                     </TableCell>
@@ -183,7 +183,7 @@ export const ActionDashboard: React.FunctionComponent<Props> = ({
                       {useDate(actionRunTimes.completedDate)}
                     </TableCell>
                     <TableCell align="left">
-                      {actionRunTimes.elapsedTime} minutes
+                      {actionRunTimes.elapsedTime} min(s)
                     </TableCell>
                   </TableRow>
                 )

@@ -1,7 +1,7 @@
 import { Done, Error, Cancel } from '@mui/icons-material'
 import { FC } from 'react'
 
-export const Status: FC<{ conclusion: string }> = ({ conclusion }) => {
+export const Status: FC<{ conclusion?: string }> = ({ conclusion }) => {
   if (conclusion === 'success') {
     return (
       <div title={conclusion}>
