@@ -6,6 +6,18 @@ on:
       - main
 
 jobs:
+  install-dependencies:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - uses: actions/setup-node@v2
+      - run: yarn --frozen-lockfile
+      
   build:
     name: Build and Deploy
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  install-dependencies:
     name: Install dependencies
     runs-on: ubuntu-latest
     steps:
