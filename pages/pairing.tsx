@@ -20,7 +20,7 @@ const names = [
 ]
 
 const startDate = new Date(2022, 2, 10)
-
+// test
 type PairingList = ReadonlyArray<{ pairs: string[]; date: Date }>
 
 const next = (date: Date) => {
