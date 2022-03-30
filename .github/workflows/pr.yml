@@ -1,0 +1,19 @@
+name: PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  install-dependencies:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - uses: actions/setup-node@v2
+      - run: yarn --frozen-lockfile
